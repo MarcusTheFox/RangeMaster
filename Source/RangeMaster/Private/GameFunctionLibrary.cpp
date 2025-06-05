@@ -16,8 +16,8 @@ TArray<AActor*> UGameFunctionLibrary::SortActorArrayByLabel(TArray<AActor*>& Arr
 			return false;
 		}
 
-		FString ALabel = A.GetActorLabel();
-		FString BLabel = B.GetActorLabel();
+		FString ALabel = A.GetHumanReadableName();
+		FString BLabel = B.GetHumanReadableName();
 
 		if (bAscending)
 		{
