@@ -6,6 +6,8 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "TrackRank.h"
 #include "HitType.h"
+#include "TrackSaveData.h"
+#include "SaveGame/RangeMasterSaveGame.h"
 #include "GameFunctionLibrary.generated.h"
 
 /**
@@ -34,4 +36,10 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static FLinearColor GetHitTypeColor(EHitType HitType);
+	
+	UFUNCTION(BlueprintCallable)
+	static void SaveTrackResult(FName TrackID, int32 Score, ETrackRank Rank);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static bool GetTrackResult(FName TrackID, FTrackSaveData& OutResult);
 };

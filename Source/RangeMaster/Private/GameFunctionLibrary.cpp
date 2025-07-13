@@ -2,6 +2,7 @@
 
 
 #include "GameFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 FText UGameFunctionLibrary::SecondsToTime(float Seconds)
 {
@@ -118,4 +119,51 @@ FLinearColor UGameFunctionLibrary::GetHitTypeColor(EHitType HitType)
 	default:
 		return FLinearColor(0.5f, 0.5f, 0.5f, 1.0f); // Серый по умолчанию
 	}
+}
+
+void UGameFunctionLibrary::SaveTrackResult(FName TrackID, int32 Score, ETrackRank Rank)
+{
+	URangeMasterSaveGame* SaveGame = Cast<URangeMasterSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("RangeMasterSave"), 0));
+	if (!SaveGame)
+	{
+		SaveGame = Cast<URangeMasterSaveGame>(UGameplayStatics::CreateSaveGameObject(URangeMasterSaveGame::StaticClass()));
+	}
+	
+	if (SaveGame)
+	{
+		if (SaveGame->TrackResults.Contains(TrackID))
+		{
+			FTrackSaveData& ExistingData = SaveGame->TrackResults[TrackID];
+			
+			if (Score > ExistingData.MaxScore)
+			{
+				ExistingData.MaxScore = Score;
+				ExistingData.MaxRank = Rank;
+			}
+		}
+		else
+		{
+			FTrackSaveData NewData;
+			NewData.MaxScore = Score;
+			NewData.MaxRank = Rank;
+			SaveGame->TrackResults.Add(TrackID, NewData);
+		}
+		
+		UGameplayStatics::SaveGameToSlot(SaveGame, TEXT("RangeMasterSave"), 0);
+		
+		UE_LOG(LogTemp, Log, TEXT("Track result saved: %s - Score: %d, Rank: %d"), *TrackID.ToString(), Score, (int32)Rank);
+	}
+}
+
+bool UGameFunctionLibrary::GetTrackResult(FName TrackID, FTrackSaveData& OutResult)
+{
+	URangeMasterSaveGame* SaveGame = Cast<URangeMasterSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("RangeMasterSave"), 0));
+	
+	if (SaveGame && SaveGame->TrackResults.Contains(TrackID))
+	{
+		OutResult = SaveGame->TrackResults[TrackID];
+		return true;
+	}
+	
+	return false;
 }
