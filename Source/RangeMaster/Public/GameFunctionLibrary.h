@@ -8,6 +8,7 @@
 #include "HitType.h"
 #include "TrackSaveData.h"
 #include "SaveGame/RangeMasterSaveGame.h"
+#include "Data/BeatMapData.h"
 #include "GameFunctionLibrary.generated.h"
 
 /**
@@ -42,4 +43,13 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static bool GetTrackResult(FName TrackID, FTrackSaveData& OutResult);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static TArray<FBeatMapData> GetBeatMapData(UDataTable* BeatMapTable);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static float GetBeatMapDuration(UDataTable* BeatMapTable);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static int32 GetBeatMapCount(UDataTable* BeatMapTable);
 };

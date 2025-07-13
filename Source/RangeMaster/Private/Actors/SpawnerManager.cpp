@@ -13,6 +13,7 @@ void ASpawnerManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	Spawners.Empty();
 	TArray<UChildActorComponent*> Components;
 	GetComponents<UChildActorComponent>(Components);
 	
@@ -23,6 +24,8 @@ void ASpawnerManager::BeginPlay()
 			Spawners.Add(Component->GetChildActor());
 		}
 	}
+	
+	Algo::Reverse(Spawners);
 }
 
 void ASpawnerManager::CreateSpawnerGrid()

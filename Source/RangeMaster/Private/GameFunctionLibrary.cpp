@@ -3,6 +3,7 @@
 
 #include "GameFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/DataTable.h"
 
 FText UGameFunctionLibrary::SecondsToTime(float Seconds)
 {
@@ -166,4 +167,52 @@ bool UGameFunctionLibrary::GetTrackResult(FName TrackID, FTrackSaveData& OutResu
 	}
 	
 	return false;
+}
+
+TArray<FBeatMapData> UGameFunctionLibrary::GetBeatMapData(UDataTable* BeatMapTable)
+{
+	TArray<FBeatMapData> BeatMapData;
+	
+	if (BeatMapTable)
+	{
+		TArray<FBeatMapData*> RowPtrs;
+		BeatMapTable->GetAllRows<FBeatMapData>(TEXT("GetBeatMapData"), RowPtrs);
+		
+		for (FBeatMapData* RowPtr : RowPtrs)
+		{
+			if (RowPtr)
+			{
+				BeatMapData.Add(*RowPtr);
+			}
+		}
+	}
+	
+	return BeatMapData;
+}
+
+float UGameFunctionLibrary::GetBeatMapDuration(UDataTable* BeatMapTable)
+{
+	TArray<FBeatMapData> BeatMapData = GetBeatMapData(BeatMapTable);
+	
+	if (BeatMapData.Num() == 0)
+	{
+		return 0.0f;
+	}
+	
+	float MaxTime = 0.0f;
+	for (const FBeatMapData& BeatData : BeatMapData)
+	{
+		if (BeatData.Time > MaxTime)
+		{
+			MaxTime = BeatData.Time;
+		}
+	}
+	
+	return MaxTime;
+}
+
+int32 UGameFunctionLibrary::GetBeatMapCount(UDataTable* BeatMapTable)
+{
+	TArray<FBeatMapData> BeatMapData = GetBeatMapData(BeatMapTable);
+	return BeatMapData.Num();
 }
