@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "TrackRank.h"
+#include "HitType.h"
 #include "GameFunctionLibrary.generated.h"
 
 /**
@@ -15,6 +17,21 @@ class RANGEMASTER_API UGameFunctionLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable)
-	static TArray<AActor*> SortActorArrayByLabel(UPARAM(ref) TArray<AActor*>& Array, bool bAscending);
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static FText SecondsToTime(float Seconds);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static FText GetRankText(ETrackRank Rank);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static FText GetRankComment(ETrackRank Rank);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static FLinearColor GetRankColor(ETrackRank Rank);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static FText GetHitTypeText(EHitType HitType);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static FLinearColor GetHitTypeColor(EHitType HitType);
 };
