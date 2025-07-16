@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Actors/Spawner.h"
 #include "SpawnerManager.generated.h"
 
 USTRUCT(BlueprintType)
@@ -49,11 +50,11 @@ public:
 	void ClearSpawnerGrid();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	TArray<AActor*> GetSpawners() const;
+	TArray<ASpawner*> GetSpawners() const;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TArray<AActor*> Spawners;
+	TArray<ASpawner*> Spawners;
 
 	FVector CalculateSpawnerPosition(int32 IndexX, int32 IndexY) const;
 }; 

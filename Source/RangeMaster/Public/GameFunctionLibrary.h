@@ -52,4 +52,10 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static int32 GetBeatMapCount(UDataTable* BeatMapTable);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Game", meta=(WorldContext="WorldContextObject"))
+	static class ARangeMasterGameMode* GetRangeMasterGameMode(const UObject* WorldContextObject);
+
+    UFUNCTION(BlueprintCallable, BlueprintPure)
+    static ETrackRank CalculateTrackRank(const TMap<EHitType, int32>& HitTypeCounts, int32 TotalBeats);
 };

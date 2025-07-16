@@ -4,6 +4,7 @@
 #include "GameFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/DataTable.h"
+#include "RangeMasterGameMode.h"
 
 FText UGameFunctionLibrary::SecondsToTime(float Seconds)
 {
@@ -90,7 +91,7 @@ FLinearColor UGameFunctionLibrary::GetRankColor(ETrackRank Rank)
 	case ETrackRank::S:
 		return FLinearColor(0.8f, 0.2f, 0.8f, 1.0f); // Фиолетовый
 	case ETrackRank::SS:
-		return FLinearColor(1.0f, 1.0f, 1.0f, 1.0f); // Белый/Золотой
+		return FLinearColor(1.0f, 0.84f, 0.0f, 1.0f); // Золотой
 	default:
 		return FLinearColor(0.5f, 0.5f, 0.5f, 1.0f); // Серый по умолчанию
 	}
@@ -215,4 +216,25 @@ int32 UGameFunctionLibrary::GetBeatMapCount(UDataTable* BeatMapTable)
 {
 	TArray<FBeatMapData> BeatMapData = GetBeatMapData(BeatMapTable);
 	return BeatMapData.Num();
+}
+
+ARangeMasterGameMode* UGameFunctionLibrary::GetRangeMasterGameMode(const UObject* WorldContextObject)
+{
+    if (!WorldContextObject) return nullptr;
+    UWorld* World = GEngine->GetWorldFromContextObjectChecked(WorldContextObject);
+    return Cast<ARangeMasterGameMode>(UGameplayStatics::GetGameMode(World));
+}
+
+ETrackRank UGameFunctionLibrary::CalculateTrackRank(const TMap<EHitType, int32>& HitTypeCounts, int32 TotalBeats)
+{
+    if (TotalBeats <= 0) return ETrackRank::None;
+    int32 Perfect = HitTypeCounts.Contains(EHitType::Perfect) ? HitTypeCounts[EHitType::Perfect] : 0;
+    float Accuracy = (float)Perfect / (float)TotalBeats;
+    if (Accuracy >= 1.0f) return ETrackRank::SS;
+    if (Accuracy >= 0.95f) return ETrackRank::S;
+    if (Accuracy >= 0.90f) return ETrackRank::A;
+    if (Accuracy >= 0.80f) return ETrackRank::B;
+    if (Accuracy >= 0.70f) return ETrackRank::C;
+    if (Accuracy >= 0.50f) return ETrackRank::D;
+    return ETrackRank::E;
 }

@@ -1,6 +1,6 @@
-#include "AC_ScoreSystem.h"
+#include "ScoreSystemComponent.h"
 
-UAC_ScoreSystem::UAC_ScoreSystem()
+UScoreSystemComponent::UScoreSystemComponent()
 {
     PrimaryComponentTick.bCanEverTick = false;
     
@@ -9,13 +9,13 @@ UAC_ScoreSystem::UAC_ScoreSystem()
     MaxCombo = 0;
 }
 
-void UAC_ScoreSystem::BeginPlay()
+void UScoreSystemComponent::BeginPlay()
 {
     Super::BeginPlay();
     ResetAllStats();
 }
 
-void UAC_ScoreSystem::AddScore(const int32 Value)
+void UScoreSystemComponent::AddScore(const int32 Value)
 {
     if (Value == 0) return;
     
@@ -23,12 +23,12 @@ void UAC_ScoreSystem::AddScore(const int32 Value)
     OnScoreChanged.Broadcast(Score);
 }
 
-int32 UAC_ScoreSystem::GetScore() const
+int32 UScoreSystemComponent::GetScore() const
 {
     return Score;
 }
 
-void UAC_ScoreSystem::IncreaseCombo(int32 Amount)
+void UScoreSystemComponent::IncreaseCombo(int32 Amount)
 {
     if (Amount <= 0) return;
     
@@ -42,7 +42,7 @@ void UAC_ScoreSystem::IncreaseCombo(int32 Amount)
     }
 }
 
-void UAC_ScoreSystem::ResetCombo()
+void UScoreSystemComponent::ResetCombo()
 {
     if (CurrentCombo == 0) return;
     
@@ -50,17 +50,30 @@ void UAC_ScoreSystem::ResetCombo()
     OnComboChanged.Broadcast(CurrentCombo);
 }
 
-int32 UAC_ScoreSystem::GetCurrentCombo() const
+int32 UScoreSystemComponent::GetCurrentCombo() const
 {
     return CurrentCombo;
 }
 
-int32 UAC_ScoreSystem::GetMaxCombo() const
+int32 UScoreSystemComponent::GetMaxCombo() const
 {
     return MaxCombo;
 }
 
-void UAC_ScoreSystem::ResetAllStats()
+int32 UScoreSystemComponent::GetComboMultiplier() const
+{
+    if (CurrentCombo >= 100)
+        return 16;
+    if (CurrentCombo >= 50)
+        return 8;
+    if (CurrentCombo >= 20)
+        return 4;
+    if (CurrentCombo >= 10)
+        return 2;
+    return 1;
+}
+
+void UScoreSystemComponent::ResetAllStats()
 {
     Score = 0;
     CurrentCombo = 0;

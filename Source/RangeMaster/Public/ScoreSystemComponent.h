@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "AC_ScoreSystem.generated.h"
+#include "ScoreSystemComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnScoreChangedDelegate, int32, NewScore);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnComboChangedDelegate, int32, NewCombo);
@@ -10,12 +10,12 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxComboChangedDelegate, int32, N
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class RANGEMASTER_API UAC_ScoreSystem : public UActorComponent
+class RANGEMASTER_API UScoreSystemComponent : public UActorComponent
 {
     GENERATED_BODY()
 
 public:    
-    UAC_ScoreSystem();
+    UScoreSystemComponent();
 
 protected:
     virtual void BeginPlay() override;
@@ -39,6 +39,9 @@ public:
     UFUNCTION(BlueprintCallable, BlueprintPure, Category="Score System|Combo")
     int32 GetMaxCombo() const;
 
+    UFUNCTION(BlueprintCallable, BlueprintPure, Category="Score System|Combo")
+    int32 GetComboMultiplier() const;
+
     UFUNCTION(BlueprintCallable, Category="Score System|Control")
     void ResetAllStats();
 
@@ -52,7 +55,7 @@ public:
     FOnMaxComboChangedDelegate OnMaxComboChanged;
 
 private:
-    UPROPERTY(VisibleAnywhere, Category="Score System|State", meta=(AllowPrivateAccess = "true")) // VisibleAnywhere, чтобы видеть в деталях для отладки
+    UPROPERTY(VisibleAnywhere, Category="Score System|State", meta=(AllowPrivateAccess = "true"))
     int32 Score;
 
     UPROPERTY(VisibleAnywhere, Category="Score System|State", meta=(AllowPrivateAccess = "true"))

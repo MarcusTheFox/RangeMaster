@@ -37,9 +37,9 @@ void ASpawnerManager::CreateSpawnerGrid()
 			ChildComponent->SetRelativeLocation(SpawnLocation);
 
 			AActor* SpawnedActor = ChildComponent->GetChildActor();
-			if (SpawnedActor)
+			if (ASpawner* Spawner = Cast<ASpawner>(SpawnedActor))
 			{
-				Spawners.Add(SpawnedActor);
+				Spawners.Add(Spawner);
 			}
 		}
 	}
@@ -61,7 +61,7 @@ void ASpawnerManager::ClearSpawnerGrid()
 	Spawners.Empty();
 }
 
-TArray<AActor*> ASpawnerManager::GetSpawners() const
+TArray<ASpawner*> ASpawnerManager::GetSpawners() const
 {
 	return Spawners;
 }
