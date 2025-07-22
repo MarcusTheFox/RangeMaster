@@ -23,6 +23,12 @@ struct FSpawnerGridSettings
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "100"))
 	float SpacingY = 200.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bInvertX = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bInvertY = false;
 };
 
 UCLASS()

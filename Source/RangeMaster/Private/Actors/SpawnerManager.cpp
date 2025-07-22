@@ -68,7 +68,7 @@ TArray<ASpawner*> ASpawnerManager::GetSpawners() const
 
 FVector ASpawnerManager::CalculateSpawnerPosition(int32 IndexX, int32 IndexY) const
 {
-	float PosX = IndexX * GridSettings.SpacingX;
-	float PosY = IndexY * GridSettings.SpacingY;
+	float PosX = (GridSettings.bInvertX ? -1.0f : 1.0f) * IndexX * GridSettings.SpacingX;
+	float PosY = (GridSettings.bInvertY ? -1.0f : 1.0f) * IndexY * GridSettings.SpacingY;
 	return FVector(PosX, PosY, 0.0f);
 } 
