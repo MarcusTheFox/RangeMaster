@@ -127,7 +127,8 @@ FLinearColor UGameFunctionLibrary::GetHitTypeColor(EHitType HitType)
 
 void UGameFunctionLibrary::SaveTrackResult(FName TrackID, int32 Score, ETrackRank Rank)
 {
-	URangeMasterSaveGame* SaveGame = Cast<URangeMasterSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("RangeMasterSave"), 0));
+	const FString SaveSlot = TrackID.ToString();
+	URangeMasterSaveGame* SaveGame = Cast<URangeMasterSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlot, 0));
 	if (!SaveGame)
 	{
 		SaveGame = Cast<URangeMasterSaveGame>(UGameplayStatics::CreateSaveGameObject(URangeMasterSaveGame::StaticClass()));
@@ -135,37 +136,28 @@ void UGameFunctionLibrary::SaveTrackResult(FName TrackID, int32 Score, ETrackRan
 	
 	if (SaveGame)
 	{
-		if (SaveGame->TrackResults.Contains(TrackID))
+		FTrackSaveData& ExistingData = SaveGame->TrackResult;
+		
+		if (Score > ExistingData.MaxScore)
 		{
-			FTrackSaveData& ExistingData = SaveGame->TrackResults[TrackID];
-			
-			if (Score > ExistingData.MaxScore)
-			{
-				ExistingData.MaxScore = Score;
-				ExistingData.MaxRank = Rank;
-			}
-		}
-		else
-		{
-			FTrackSaveData NewData;
-			NewData.MaxScore = Score;
-			NewData.MaxRank = Rank;
-			SaveGame->TrackResults.Add(TrackID, NewData);
+			ExistingData.MaxScore = Score;
+			ExistingData.MaxRank = Rank;
 		}
 		
-		UGameplayStatics::SaveGameToSlot(SaveGame, TEXT("RangeMasterSave"), 0);
+		UGameplayStatics::SaveGameToSlot(SaveGame, SaveSlot, 0);
 		
-		UE_LOG(LogTemp, Log, TEXT("Track result saved: %s - Score: %d, Rank: %d"), *TrackID.ToString(), Score, (int32)Rank);
+		UE_LOG(LogTemp, Log, TEXT("Track result saved: %s - Score: %d, Rank: %d"), *SaveSlot, Score, (int32)Rank);
 	}
 }
 
 bool UGameFunctionLibrary::GetTrackResult(FName TrackID, FTrackSaveData& OutResult)
 {
-	URangeMasterSaveGame* SaveGame = Cast<URangeMasterSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("RangeMasterSave"), 0));
+	const FString SaveSlot = TrackID.ToString();
+	URangeMasterSaveGame* SaveGame = Cast<URangeMasterSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlot, 0));
 	
-	if (SaveGame && SaveGame->TrackResults.Contains(TrackID))
+	if (SaveGame)
 	{
-		OutResult = SaveGame->TrackResults[TrackID];
+		OutResult = SaveGame->TrackResult;
 		return true;
 	}
 	

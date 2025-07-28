@@ -16,5 +16,5 @@ public:
 	URangeMasterSaveGame();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Tracks")
-	TMap<FName, FTrackSaveData> TrackResults;
+	FTrackSaveData TrackResult;
 }; 
