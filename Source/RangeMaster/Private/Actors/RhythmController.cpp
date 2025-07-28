@@ -1,6 +1,5 @@
 #include "Actors/RhythmController.h"
 #include "Actors/SpawnerManager.h"
-#include "EngineUtils.h"
 #include "GameFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -23,7 +22,7 @@ void ARhythmController::StopMusic_Implementation()
 
 void ARhythmController::PlayMusic_Implementation()
 {
-    LastSpawnedBeatIndex = 0;
+    LastSpawnedTargetIndex = 0;
     if (MusicComponent)
     {
         MusicComponent->Play();
@@ -76,7 +75,6 @@ void ARhythmController::OnMusicPlaybackFinished_Implementation()
 
 void ARhythmController::TrySpawnTargetAtTime_Implementation(float CurrentTime)
 {
-    // TODO: Проверить битмап и заспавнить цель, если пора
 }
 
 void ARhythmController::SpawnTargetsByBeatMap_Implementation(float CurrentTime, TSubclassOf<ATarget> TargetClass)
@@ -86,21 +84,22 @@ void ARhythmController::SpawnTargetsByBeatMap_Implementation(float CurrentTime, 
         UE_LOG(LogTemp, Error, TEXT("CachedSpawners is empty!"));
         return;
     }
-    if (CachedBeatMap.Num() == 0)
+    if (CachedTimeMap.Num() == 0)
     {
-        UE_LOG(LogTemp, Error, TEXT("CachedBeatMap is empty!"));
+        UE_LOG(LogTemp, Error, TEXT("CachedTimeMap is empty!"));
         return;
     }
-    while (LastSpawnedBeatIndex < CachedBeatMap.Num())
+    while (LastSpawnedTargetIndex < CachedTimeMap.Num())
     {
-        const FBeatMapData& Beat = CachedBeatMap[LastSpawnedBeatIndex];
-        if (Beat.Time <= CurrentTime)
+        const FTimeMapData& Data = CachedTimeMap[LastSpawnedTargetIndex];
+        if (Data.Time <= CurrentTime)
         {
-            if (CachedSpawners.IsValidIndex(Beat.SpawnerID) && CachedSpawners[Beat.SpawnerID])
+            ++LastSpawnedTargetIndex;
+            if (Data.ShotPower == 0) continue;
+            if (CachedSpawners.IsValidIndex(Data.SpawnerID) && CachedSpawners[Data.SpawnerID])
             {
-                CachedSpawners[Beat.SpawnerID]->SpawnTarget(TargetClass, Beat.ShotPower);
+                CachedSpawners[Data.SpawnerID]->SpawnTarget(TargetClass, Data.ShotPower);
             }
-            ++LastSpawnedBeatIndex;
         }
         else
         {
@@ -112,6 +111,20 @@ void ARhythmController::SpawnTargetsByBeatMap_Implementation(float CurrentTime, 
 void ARhythmController::SetBeatMapTable(UDataTable* InTable)
 {
     BeatMapTable = InTable;
-    CachedBeatMap = BeatMapTable ? UGameFunctionLibrary::GetBeatMapData(BeatMapTable) : TArray<FBeatMapData>();
-    LastSpawnedBeatIndex = 0;
-} 
+    if (BeatMapTable)
+    {
+        CachedTimeMap = UGameFunctionLibrary::GetTimeMapData(BeatMapTable);
+    }
+    else
+    {
+        CachedTimeMap.Empty();
+    }
+
+    LastSpawnedTargetIndex = 0;
+}
+
+void ARhythmController::SetTrackData(FTrackDataRow TrackData)
+{
+    SetBeatMapTable(TrackData.BeatMap);
+    MusicComponent->SetSound(TrackData.SoundWave);
+}

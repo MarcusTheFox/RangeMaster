@@ -6,6 +6,7 @@
 #include "ScoreSystemComponent.h"
 #include "GameResultData.h"
 #include "CountdownInfo.h"
+#include "Data/TrackDataRow.h"
 #include "RangeMasterGameMode.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHitRegistered, EHitType, HitType);
@@ -33,7 +34,7 @@ public:
     void HandleMusicFinished();
 
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Game")
-    void StartGameRequest();
+    void StartGameRequest(FTrackDataRow TrackData);
 
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Game")
     void ForceStopGame();
@@ -64,6 +65,9 @@ public:
 
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Game")
     class ARhythmController* RhythmController = nullptr;
+    
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Game")
+    FTrackDataRow CurrentTrackData;
 
     // === ДЛЯ ПЛАВНОГО ОТСЧЁТА ===
 

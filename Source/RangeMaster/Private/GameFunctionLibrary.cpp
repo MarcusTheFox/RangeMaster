@@ -5,6 +5,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/DataTable.h"
 #include "RangeMasterGameMode.h"
+#include "Algo/Count.h"
+#include "SaveGame/RangeMasterSaveGame.h"
 
 FText UGameFunctionLibrary::SecondsToTime(float Seconds)
 {
@@ -191,9 +193,58 @@ TArray<FBeatMapData> UGameFunctionLibrary::GetBeatMapData(UDataTable* BeatMapTab
 	return BeatMapData;
 }
 
+TArray<FTimeMapData> UGameFunctionLibrary::GetTimeMapData(UDataTable* BeatMapTable)
+{
+	return ConvertBeatMapToBeatTimes(GetBeatMapData(BeatMapTable));
+}
+
+TArray<FTimeMapData> UGameFunctionLibrary::ConvertBeatMapToBeatTimes(TArray<FBeatMapData> BeatMapData)
+{
+	TArray<FTimeMapData> BeatTimes;
+	if (BeatMapData.Num() == 0) return BeatTimes;
+
+	BeatTimes.Reserve(BeatMapData.Num());
+
+	double CurrentTime = 0.0f;
+	float PreviousBeat = 0.0f;
+	float CurrentBPM = 120.0f;
+	
+	if (BeatMapData[0].BPM > 0.0f)
+	{
+		CurrentBPM = BeatMapData[0].BPM;
+	}
+
+	for (const FBeatMapData& Data: BeatMapData)
+	{
+		const float Beat = Data.BeatIndex + Data.BeatFraction;
+		const float DeltaBeat = Beat - PreviousBeat;
+
+		if (CurrentBPM > 0.0f)
+		{
+			const float SecondsPerBeat = 60.0f / CurrentBPM;
+			CurrentTime += DeltaBeat * SecondsPerBeat;
+		}
+		if (Data.BPM > 0.0f)
+		{
+			CurrentBPM = Data.BPM;
+		}
+        
+		FTimeMapData NewTimeData;
+		NewTimeData.SpawnerID = Data.SpawnerID;
+		NewTimeData.ShotPower = Data.ShotPower;
+		NewTimeData.Time = CurrentTime;
+		
+		BeatTimes.Add(NewTimeData);
+
+		PreviousBeat = Beat;
+	}
+
+	return BeatTimes;
+}
+
 float UGameFunctionLibrary::GetBeatMapDuration(UDataTable* BeatMapTable)
 {
-	TArray<FBeatMapData> BeatMapData = GetBeatMapData(BeatMapTable);
+	TArray<FTimeMapData> BeatMapData = GetTimeMapData(BeatMapTable);
 	
 	if (BeatMapData.Num() == 0)
 	{
@@ -201,7 +252,7 @@ float UGameFunctionLibrary::GetBeatMapDuration(UDataTable* BeatMapTable)
 	}
 	
 	float MaxTime = 0.0f;
-	for (const FBeatMapData& BeatData : BeatMapData)
+	for (const FTimeMapData& BeatData : BeatMapData)
 	{
 		if (BeatData.Time > MaxTime)
 		{
@@ -212,10 +263,13 @@ float UGameFunctionLibrary::GetBeatMapDuration(UDataTable* BeatMapTable)
 	return MaxTime;
 }
 
-int32 UGameFunctionLibrary::GetBeatMapCount(UDataTable* BeatMapTable)
+int32 UGameFunctionLibrary::GetTotalTargetCount(UDataTable* BeatMapTable)
 {
 	TArray<FBeatMapData> BeatMapData = GetBeatMapData(BeatMapTable);
-	return BeatMapData.Num();
+	return Algo::CountIf(BeatMapData, [](const FBeatMapData& Data)
+	{
+		return Data.ShotPower > 0.0f;
+	});
 }
 
 ARangeMasterGameMode* UGameFunctionLibrary::GetRangeMasterGameMode(const UObject* WorldContextObject)
@@ -229,7 +283,7 @@ ETrackRank UGameFunctionLibrary::CalculateTrackRank(const TMap<EHitType, int32>&
 {
     if (TotalBeats <= 0) return ETrackRank::None;
     int32 Perfect = HitTypeCounts.Contains(EHitType::Perfect) ? HitTypeCounts[EHitType::Perfect] : 0;
-    float Accuracy = (float)Perfect / (float)TotalBeats;
+    float Accuracy = static_cast<float>(Perfect) / static_cast<float>(TotalBeats);
     if (Accuracy >= 1.0f) return ETrackRank::SS;
     if (Accuracy >= 0.95f) return ETrackRank::S;
     if (Accuracy >= 0.90f) return ETrackRank::A;

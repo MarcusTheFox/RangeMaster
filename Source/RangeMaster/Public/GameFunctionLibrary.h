@@ -7,8 +7,8 @@
 #include "TrackRank.h"
 #include "HitType.h"
 #include "TrackSaveData.h"
-#include "SaveGame/RangeMasterSaveGame.h"
 #include "Data/BeatMapData.h"
+#include "Data/TimeMapData.h"
 #include "GameFunctionLibrary.generated.h"
 
 /**
@@ -46,12 +46,16 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static TArray<FBeatMapData> GetBeatMapData(UDataTable* BeatMapTable);
+
+	static TArray<FTimeMapData> GetTimeMapData(UDataTable* BeatMapTable);
+	
+	static TArray<FTimeMapData> ConvertBeatMapToBeatTimes(TArray<FBeatMapData> BeatMapData);
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static float GetBeatMapDuration(UDataTable* BeatMapTable);
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	static int32 GetBeatMapCount(UDataTable* BeatMapTable);
+	static int32 GetTotalTargetCount(UDataTable* BeatMapTable);
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Game", meta=(WorldContext="WorldContextObject"))
 	static class ARangeMasterGameMode* GetRangeMasterGameMode(const UObject* WorldContextObject);

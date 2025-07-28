@@ -7,6 +7,8 @@
 #include "Data/BeatMapData.h"
 #include "Actors/SpawnerManager.h"
 #include "Actors/Target.h"
+#include "Data/TimeMapData.h"
+#include "Data/TrackDataRow.h"
 #include "RhythmController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMusicFinished);
@@ -56,6 +58,9 @@ public:
     UFUNCTION(BlueprintCallable, Category="Music|BeatMap")
     void SetBeatMapTable(UDataTable* InTable);
 
+    UFUNCTION(BlueprintCallable, Category="Music|BeatMap")
+    void SetTrackData(FTrackDataRow TrackData);
+
 private:
     UPROPERTY()
     ASpawnerManager* SpawnerManager = nullptr;
@@ -63,6 +68,6 @@ private:
     UPROPERTY()
     TArray<ASpawner*> CachedSpawners;
 
-    int32 LastSpawnedBeatIndex = 0;
-    TArray<FBeatMapData> CachedBeatMap;
+    int32 LastSpawnedTargetIndex = 0;
+    TArray<FTimeMapData> CachedTimeMap;
 }; 

@@ -11,16 +11,18 @@ struct FBeatMapData : public FTableRowBase
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0.0"))
-	float Time = 0.0f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"))
 	int32 SpawnerID = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "100"))
 	int32 ShotPower = 1000;
 
-	FBeatMapData()
-		: Time(0.0f), SpawnerID(0), ShotPower(1000)
-	{}
-}; 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 BeatIndex = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BeatFraction = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BPM = 0.0f;
+};

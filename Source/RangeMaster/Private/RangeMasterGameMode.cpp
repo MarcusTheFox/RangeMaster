@@ -24,13 +24,16 @@ void ARangeMasterGameMode::HandleMusicFinished()
     OnMusicFinished();
 }
 
-void ARangeMasterGameMode::StartGameRequest_Implementation()
+void ARangeMasterGameMode::StartGameRequest_Implementation(FTrackDataRow TrackData)
 {
+    CurrentTrackData = TrackData; 
+    
     ResetHitTypeCounts();
     if (ScoreSystem)
     {
         ScoreSystem->ResetAllStats();
     }
+    RhythmController->SetTrackData(TrackData);
     StartPreparePhase();
 }
 
@@ -84,13 +87,12 @@ void ARangeMasterGameMode::ForceStopGame_Implementation()
 
 void ARangeMasterGameMode::OnMusicFinished()
 {
-    FName TrackID = TEXT("1"); // TODO: получить актуальный ID трека
+    FName TrackID = CurrentTrackData.TrackID;
     int32 Score = ScoreSystem ? ScoreSystem->GetScore() : 0;
     int32 TotalBeats = 0;
-    int32 MissCount = GetHitTypeCount(EHitType::Miss);
     if (RhythmController && RhythmController->BeatMapTable)
     {
-        TotalBeats = UGameFunctionLibrary::GetBeatMapCount(RhythmController->BeatMapTable);
+        TotalBeats = UGameFunctionLibrary::GetTotalTargetCount(RhythmController->BeatMapTable);
     }
     ETrackRank Rank = UGameFunctionLibrary::CalculateTrackRank(HitTypeCounts, TotalBeats);
     if (!bWasForceStopped)
