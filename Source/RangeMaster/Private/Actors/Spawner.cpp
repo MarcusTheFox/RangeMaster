@@ -2,9 +2,9 @@
 #include "Engine/World.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h"
-#include "GameFunctionLibrary.h"
 #include "RangeMasterGameMode.h"
 #include "HitType.h"
+#include "FunctionLibraries/GameUtilityFunctionLibrary.h"
 
 ASpawner::ASpawner()
 {
@@ -53,7 +53,7 @@ void ASpawner::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Other
     if (ATarget* Target = Cast<ATarget>(OtherActor))
     {
         Target->DestroyTarget();
-        ARangeMasterGameMode* GM = UGameFunctionLibrary::GetRangeMasterGameMode(this);
+        ARangeMasterGameMode* GM = UGameUtilityFunctionLibrary::GetRangeMasterGameMode(this);
         if (GM)
         {
             GM->RegisterHit(EHitType::Miss);

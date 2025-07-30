@@ -1,8 +1,8 @@
 #include "Actors/Target.h"
-#include "GameFunctionLibrary.h"
 #include "RangeMasterGameMode.h"
 #include "ScoreSystemComponent.h"
 #include "Components/PrimitiveComponent.h"
+#include "FunctionLibraries/GameUtilityFunctionLibrary.h"
 
 ATarget::ATarget()
 {
@@ -11,7 +11,7 @@ ATarget::ATarget()
 
 void ATarget::OnHit_Implementation()
 {
-    ARangeMasterGameMode* GM = UGameFunctionLibrary::GetRangeMasterGameMode(this);
+    ARangeMasterGameMode* GM = UGameUtilityFunctionLibrary::GetRangeMasterGameMode(this);
     if (GM && GM->ScoreSystem)
     {
         GM->ScoreSystem->IncreaseCombo();

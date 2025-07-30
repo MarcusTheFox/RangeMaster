@@ -1,6 +1,6 @@
 #include "Actors/RhythmController.h"
 #include "Actors/SpawnerManager.h"
-#include "GameFunctionLibrary.h"
+#include "FunctionLibraries/BeatMapFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
 ARhythmController::ARhythmController()
@@ -113,7 +113,7 @@ void ARhythmController::SetBeatMapTable(UDataTable* InTable)
     BeatMapTable = InTable;
     if (BeatMapTable)
     {
-        CachedTimeMap = UGameFunctionLibrary::GetTimeMapData(BeatMapTable);
+        CachedTimeMap = UBeatMapFunctionLibrary::GetTimeMapData(BeatMapTable);
     }
     else
     {

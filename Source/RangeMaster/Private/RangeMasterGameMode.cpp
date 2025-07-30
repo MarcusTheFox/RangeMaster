@@ -1,8 +1,10 @@
 #include "RangeMasterGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "Actors/RhythmController.h"
-#include "GameFunctionLibrary.h"
 #include "TrackRank.h"
+#include "FunctionLibraries/BeatMapFunctionLibrary.h"
+#include "FunctionLibraries/GameSaveFunctionLibrary.h"
+#include "FunctionLibraries/RankFunctionLibrary.h"
 
 ARangeMasterGameMode::ARangeMasterGameMode()
 {
@@ -92,12 +94,12 @@ void ARangeMasterGameMode::OnMusicFinished()
     int32 TotalBeats = 0;
     if (RhythmController && RhythmController->BeatMapTable)
     {
-        TotalBeats = UGameFunctionLibrary::GetTotalTargetCount(RhythmController->BeatMapTable);
+        TotalBeats = UBeatMapFunctionLibrary::GetTotalTargetCount(RhythmController->BeatMapTable);
     }
-    ETrackRank Rank = UGameFunctionLibrary::CalculateTrackRank(HitTypeCounts, TotalBeats);
+    ETrackRank Rank = URankFunctionLibrary::CalculateTrackRank(HitTypeCounts, TotalBeats);
     if (!bWasForceStopped)
     {
-        UGameFunctionLibrary::SaveTrackResult(TrackID, Score, Rank);
+        UGameSaveFunctionLibrary::SaveTrackResult(TrackID, Score, Rank);
     }
     
     FGameResultData Result;
