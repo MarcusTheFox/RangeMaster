@@ -39,6 +39,9 @@ public:
 	void SetSFXVolume(float Value);
 
 	UFUNCTION(BlueprintCallable, Category = "Settings")
+	void SetUIVolume(float Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Settings")
 	void SetMouseSensitivity(float Value);
 
 	UFUNCTION(BlueprintPure, Category = "Settings")
@@ -72,6 +75,8 @@ private:
 	TObjectPtr<USoundClass> MusicSoundClass;
 	UPROPERTY(Transient)
 	TObjectPtr<USoundClass> SFXSoundClass;
+	UPROPERTY(Transient)
+	TObjectPtr<USoundClass> UISoundClass;
 	UPROPERTY(Transient)
 	TObjectPtr<USettingsAssetData> LoadedSettingsAssets;
 };

@@ -28,4 +28,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Audio")
 	TSoftObjectPtr<USoundClass> SFXSoundClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Audio")
+	TSoftObjectPtr<USoundClass> UISoundClass;
 };

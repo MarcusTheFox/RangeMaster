@@ -16,6 +16,9 @@ struct FGameAudioSettings
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Settings|Audio")
 	float SFXVolume = 1.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Settings|Audio")
+	float UIVolume = 1.0f;
 };
 
 USTRUCT(BlueprintType)

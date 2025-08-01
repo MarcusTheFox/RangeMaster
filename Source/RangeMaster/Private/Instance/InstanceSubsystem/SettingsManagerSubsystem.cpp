@@ -42,6 +42,7 @@ void USettingsManagerSubsystem::LoadAssets()
 	MasterSoundClass = LoadedAssets->MasterSoundClass.LoadSynchronous();
 	MusicSoundClass = LoadedAssets->MusicSoundClass.LoadSynchronous();
 	SFXSoundClass = LoadedAssets->SFXSoundClass.LoadSynchronous();
+	UISoundClass = LoadedAssets->UISoundClass.LoadSynchronous();
 }
 
 void USettingsManagerSubsystem::LoadSettings()
@@ -73,6 +74,8 @@ void USettingsManagerSubsystem::ApplyAudioSettings()
 	                                           CurrentAudioSettings.MusicVolume, 1.0f, 0.0f);
 	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), SettingsSoundMix, SFXSoundClass,
 	                                           CurrentAudioSettings.SFXVolume, 1.0f, 0.0f);
+	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), SettingsSoundMix, UISoundClass,
+	                                           CurrentAudioSettings.UIVolume, 1.0f, 0.0f);
 }
 
 void USettingsManagerSubsystem::ApplyControlsSettings()
@@ -124,6 +127,13 @@ void USettingsManagerSubsystem::SetMusicVolume(float Value)
 void USettingsManagerSubsystem::SetSFXVolume(float Value)
 {
 	CurrentAudioSettings.SFXVolume = FMath::Clamp(Value, 0.0f, 1.0f);
+	ApplyAudioSettings();
+	SaveSettings();
+}
+
+void USettingsManagerSubsystem::SetUIVolume(float Value)
+{
+	CurrentAudioSettings.UIVolume = FMath::Clamp(Value, 0.0f, 1.0f);
 	ApplyAudioSettings();
 	SaveSettings();
 }
