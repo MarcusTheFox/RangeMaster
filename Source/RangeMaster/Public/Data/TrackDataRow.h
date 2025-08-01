@@ -21,14 +21,14 @@ struct FTrackDataRow : public FTableRowBase
 	FText ArtistName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	USoundWave* SoundWave;
+	USoundWave* SoundWave = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float DurationSeconds;
+	float DurationSeconds = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float BPM = 120;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "100"))
-	UDataTable* BeatMap;
+	UDataTable* BeatMap = nullptr;
 };
