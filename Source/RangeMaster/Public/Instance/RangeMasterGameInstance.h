@@ -16,6 +16,8 @@ class RANGEMASTER_API URangeMasterGameInstance : public UGameInstance
 	GENERATED_BODY()
 
 public:
+	virtual void Init() override;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Settings")
 	TSoftObjectPtr<USettingsAssetData> SettingsAssetData;
 };

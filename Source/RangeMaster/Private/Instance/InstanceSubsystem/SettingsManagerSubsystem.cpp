@@ -7,11 +7,30 @@
 #include "Instance/RangeMasterGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
+USettingsManagerSubsystem::USettingsManagerSubsystem()
+{
+	UE_LOG(LogTemp, Warning, TEXT("USettingsManagerSubsystem Constructor Called!"))
+}
+
 void USettingsManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-    
-	LoadAssets();
+}
+
+void USettingsManagerSubsystem::ConfigureSubsystem(USettingsAssetData* InSettingsAssetData)
+{
+	if (!InSettingsAssetData)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ConfigureSubsystem called with invalid SettingsAssetData!"));
+		return;
+	}
+	
+	SettingsSoundMix = InSettingsAssetData->SettingsSoundMix.LoadSynchronous();
+	MasterSoundClass = InSettingsAssetData->MasterSoundClass.LoadSynchronous();
+	MusicSoundClass = InSettingsAssetData->MusicSoundClass.LoadSynchronous();
+	SFXSoundClass = InSettingsAssetData->SFXSoundClass.LoadSynchronous();
+	UISoundClass = InSettingsAssetData->UISoundClass.LoadSynchronous();
+	
 	LoadSettings();
 	ApplyAllSettings();
 }
@@ -25,7 +44,12 @@ void USettingsManagerSubsystem::ApplyAllSettings()
 void USettingsManagerSubsystem::LoadAssets()
 {
 	URangeMasterGameInstance* GameInstance = Cast<URangeMasterGameInstance>(GetGameInstance());
-	if (!GameInstance || !GameInstance->SettingsAssetData.IsValid())
+	if (!GameInstance)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed get GameInstance!"));
+		return;
+	}
+	if (!GameInstance->SettingsAssetData.IsValid())
 	{
 		UE_LOG(LogTemp, Error, TEXT("SettingsAssetData is not set in GameInstance!"));
 		return;
@@ -62,7 +86,12 @@ void USettingsManagerSubsystem::LoadSettings()
 
 void USettingsManagerSubsystem::ApplyAudioSettings()
 {
-	if (!GetWorld() || !SettingsSoundMix || !MasterSoundClass || !MusicSoundClass || !SFXSoundClass)
+	if (!GetWorld())
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed get World!"));
+		return;
+	}
+	if (!SettingsSoundMix || !MasterSoundClass || !MusicSoundClass || !SFXSoundClass)
 	{
         UE_LOG(LogTemp, Error, TEXT("Cannot apply audio settings, asset references are not loaded!"));
 		return;

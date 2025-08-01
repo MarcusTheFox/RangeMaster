@@ -18,7 +18,12 @@ class RANGEMASTER_API USettingsManagerSubsystem : public UGameInstanceSubsystem
 	GENERATED_BODY()
 
 public:
+	USettingsManagerSubsystem();
+	
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	
+	UFUNCTION(BlueprintCallable, Category = "Settings")
+	void ConfigureSubsystem(USettingsAssetData* InSettingsAssetData);
 	
 	UFUNCTION(BlueprintCallable, Category = "Settings")
 	void SaveSettings();
