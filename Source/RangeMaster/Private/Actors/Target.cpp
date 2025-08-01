@@ -1,6 +1,6 @@
 #include "Actors/Target.h"
-#include "RangeMasterGameMode.h"
-#include "ScoreSystemComponent.h"
+#include "Core/RangeMasterGameMode.h"
+#include "Components/ScoreSystemComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "FunctionLibraries/GameUtilityFunctionLibrary.h"
 

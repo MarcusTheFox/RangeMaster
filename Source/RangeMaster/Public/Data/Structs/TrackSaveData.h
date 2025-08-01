@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TrackRank.h"
+#include "Data/Enums/TrackRank.h"
 #include "TrackSaveData.generated.h"
 
 USTRUCT(BlueprintType)

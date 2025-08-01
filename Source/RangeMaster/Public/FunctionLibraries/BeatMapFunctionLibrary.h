@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Data/BeatMapData.h"
-#include "Data/TimeMapData.h"
-#include "Data/TrackDataRow.h"
+#include "Data/Structs/BeatMapData.h"
+#include "Data/Structs/TimeMapData.h"
+#include "Data/Structs/TrackDataRow.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "BeatMapFunctionLibrary.generated.h"
 

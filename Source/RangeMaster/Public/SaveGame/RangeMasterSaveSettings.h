@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SettingsData.h"
+#include "Data/Structs/SettingsData.h"
 #include "GameFramework/SaveGame.h"
 #include "RangeMasterSaveSettings.generated.h"
 

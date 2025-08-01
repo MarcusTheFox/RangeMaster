@@ -1,8 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TrackRank.h"
-#include "HitType.h"
+#include "Data/Enums/HitType.h"
+#include "Data/Enums/TrackRank.h"
 #include "GameResultData.generated.h"
 
 USTRUCT(BlueprintType)

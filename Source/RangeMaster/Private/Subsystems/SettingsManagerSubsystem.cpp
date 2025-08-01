@@ -1,10 +1,10 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "RangeMaster/Public/Instance/InstanceSubsystem/SettingsManagerSubsystem.h"
+#include "RangeMaster/Public/Subsystems/SettingsManagerSubsystem.h"
 
-#include "Data/SettingsAssetData.h"
-#include "Instance/RangeMasterGameInstance.h"
+#include "Data/Assets/SettingsAssetData.h"
+#include "Core/RangeMasterGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 USettingsManagerSubsystem::USettingsManagerSubsystem()

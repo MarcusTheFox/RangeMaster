@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Data/SettingsAssetData.h"
+#include "Data/Assets/SettingsAssetData.h"
 #include "Engine/GameInstance.h"
 #include "RangeMasterGameInstance.generated.h"
 

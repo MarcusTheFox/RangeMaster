@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TrackSaveData.h"
+#include "Data/Structs/TrackSaveData.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GameSaveFunctionLibrary.generated.h"
 

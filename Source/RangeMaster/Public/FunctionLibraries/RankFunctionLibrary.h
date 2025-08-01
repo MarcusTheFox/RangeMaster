@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "HitType.h"
-#include "TrackRank.h"
+#include "Data/Enums/HitType.h"
+#include "Data/Enums/TrackRank.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "RankFunctionLibrary.generated.h"
 

@@ -4,7 +4,7 @@
 #include "FunctionLibraries/GameUtilityFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/DataTable.h"
-#include "RangeMasterGameMode.h"
+#include "Core/RangeMasterGameMode.h"
 
 FText UGameUtilityFunctionLibrary::SecondsToTime(float Seconds)
 {

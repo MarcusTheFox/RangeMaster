@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "SaveGame/RangeMasterSaveSettings.h"
-#include "SaveGame/SettingsData.h"
+#include "Data/Structs/SettingsData.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "SettingsManagerSubsystem.generated.h"
 

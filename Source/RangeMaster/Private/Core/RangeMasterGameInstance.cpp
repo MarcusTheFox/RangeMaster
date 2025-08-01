@@ -1,9 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Instance/RangeMasterGameInstance.h"
+#include "Core//RangeMasterGameInstance.h"
 
-#include "Instance/InstanceSubsystem/SettingsManagerSubsystem.h"
+#include "Subsystems//SettingsManagerSubsystem.h"
 
 void URangeMasterGameInstance::Init()
 {

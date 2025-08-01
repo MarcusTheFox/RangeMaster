@@ -2,8 +2,8 @@
 #include "Engine/World.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h"
-#include "RangeMasterGameMode.h"
-#include "HitType.h"
+#include "Core/RangeMasterGameMode.h"
+#include "Data/Enums/HitType.h"
 #include "FunctionLibraries/GameUtilityFunctionLibrary.h"
 
 ASpawner::ASpawner()

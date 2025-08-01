@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
-#include "TrackSaveData.h"
+#include "Data/Structs/TrackSaveData.h"
 #include "RangeMasterSaveGame.generated.h"
 
 UCLASS()

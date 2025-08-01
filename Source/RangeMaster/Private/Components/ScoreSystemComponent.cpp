@@ -1,4 +1,4 @@
-#include "ScoreSystemComponent.h"
+#include "Components/ScoreSystemComponent.h"
 
 UScoreSystemComponent::UScoreSystemComponent()
 {

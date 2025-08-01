@@ -2,11 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "HitType.h"
-#include "ScoreSystemComponent.h"
-#include "GameResultData.h"
-#include "CountdownInfo.h"
-#include "Data/TrackDataRow.h"
+#include "Data/Enums/HitType.h"
+#include "Components/ScoreSystemComponent.h"
+#include "Data/Structs/GameResultData.h"
+#include "Data/Structs/CountdownInfo.h"
+#include "Data/Structs/TrackDataRow.h"
 #include "RangeMasterGameMode.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHitRegistered, EHitType, HitType);

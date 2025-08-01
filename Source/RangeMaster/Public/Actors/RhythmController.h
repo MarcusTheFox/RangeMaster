@@ -4,11 +4,11 @@
 #include "GameFramework/Actor.h"
 #include "Components/AudioComponent.h"
 #include "Engine/DataTable.h"
-#include "Data/BeatMapData.h"
+#include "Data/Structs/BeatMapData.h"
 #include "Actors/SpawnerManager.h"
 #include "Actors/Target.h"
-#include "Data/TimeMapData.h"
-#include "Data/TrackDataRow.h"
+#include "Data/Structs/TimeMapData.h"
+#include "Data/Structs/TrackDataRow.h"
 #include "RhythmController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMusicFinished);
