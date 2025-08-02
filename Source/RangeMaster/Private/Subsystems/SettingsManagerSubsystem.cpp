@@ -2,9 +2,7 @@
 
 
 #include "RangeMaster/Public/Subsystems/SettingsManagerSubsystem.h"
-
-#include "Data/Assets/SettingsAssetData.h"
-#include "Core/RangeMasterGameInstance.h"
+#include "Settings/RangeMasterProjectSettings.h"
 #include "Kismet/GameplayStatics.h"
 
 USettingsManagerSubsystem::USettingsManagerSubsystem()
@@ -15,58 +13,36 @@ USettingsManagerSubsystem::USettingsManagerSubsystem()
 void USettingsManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-}
-
-void USettingsManagerSubsystem::ConfigureSubsystem(USettingsAssetData* InSettingsAssetData)
-{
-	if (!InSettingsAssetData)
+	UE_LOG(LogTemp, Log, TEXT("SettingsManagerSubsystem Initialized (Pre-config)."));
+	
+	const URangeMasterProjectSettings* ProjectSettings = URangeMasterProjectSettings::Get();
+	if (!ProjectSettings)
 	{
-		UE_LOG(LogTemp, Error, TEXT("ConfigureSubsystem called with invalid SettingsAssetData!"));
+		UE_LOG(LogTemp, Error, TEXT("Failed to get Project Settings in Init subsystem!"));
 		return;
 	}
 	
-	SettingsSoundMix = InSettingsAssetData->SettingsSoundMix.LoadSynchronous();
-	MasterSoundClass = InSettingsAssetData->MasterSoundClass.LoadSynchronous();
-	MusicSoundClass = InSettingsAssetData->MusicSoundClass.LoadSynchronous();
-	SFXSoundClass = InSettingsAssetData->SFXSoundClass.LoadSynchronous();
-	UISoundClass = InSettingsAssetData->UISoundClass.LoadSynchronous();
+	SettingsSoundMix = ProjectSettings->SettingsSoundMix.LoadSynchronous();
+	MasterSoundClass = ProjectSettings->MasterSoundClass.LoadSynchronous();
+	MusicSoundClass = ProjectSettings->MusicSoundClass.LoadSynchronous();
+	SFXSoundClass = ProjectSettings->SFXSoundClass.LoadSynchronous();
+	UISoundClass = ProjectSettings->UISoundClass.LoadSynchronous();
+	
+	if (!SettingsSoundMix || !MasterSoundClass || !MusicSoundClass || !SFXSoundClass || !UISoundClass)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Audio assets are not set in Project Settings!"));
+		return;
+	}
 	
 	LoadSettings();
 	ApplyAllSettings();
+	UE_LOG(LogTemp, Log, TEXT("SettingsManagerSubsystem configured directly from Project Settings."));
 }
 
 void USettingsManagerSubsystem::ApplyAllSettings()
 {
 	ApplyAudioSettings();
 	ApplyControlsSettings();
-}
-
-void USettingsManagerSubsystem::LoadAssets()
-{
-	URangeMasterGameInstance* GameInstance = Cast<URangeMasterGameInstance>(GetGameInstance());
-	if (!GameInstance)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed get GameInstance!"));
-		return;
-	}
-	if (!GameInstance->SettingsAssetData.IsValid())
-	{
-		UE_LOG(LogTemp, Error, TEXT("SettingsAssetData is not set in GameInstance!"));
-		return;
-	}
-
-	USettingsAssetData* LoadedAssets = GameInstance->SettingsAssetData.LoadSynchronous();
-	if (!LoadedAssets)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to load SettingsDataAsset."));
-		return;
-	}
-
-	SettingsSoundMix = LoadedAssets->SettingsSoundMix.LoadSynchronous();
-	MasterSoundClass = LoadedAssets->MasterSoundClass.LoadSynchronous();
-	MusicSoundClass = LoadedAssets->MusicSoundClass.LoadSynchronous();
-	SFXSoundClass = LoadedAssets->SFXSoundClass.LoadSynchronous();
-	UISoundClass = LoadedAssets->UISoundClass.LoadSynchronous();
 }
 
 void USettingsManagerSubsystem::LoadSettings()

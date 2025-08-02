@@ -23,9 +23,6 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	
 	UFUNCTION(BlueprintCallable, Category = "Settings")
-	void ConfigureSubsystem(USettingsAssetData* InSettingsAssetData);
-	
-	UFUNCTION(BlueprintCallable, Category = "Settings")
 	void SaveSettings();
 
 	UFUNCTION(BlueprintCallable, Category = "Settings")
@@ -55,12 +52,7 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Settings")
 	const FGameControlsSettings& GetControlsSettings() const { return CurrentControlsSettings; }
 
-protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Settings")
-	TSoftObjectPtr<USettingsAssetData> SettingsAssets;
-
 private:
-	void LoadAssets();
 	void LoadSettings();
 	void ApplyAllSettings();
 	void ApplyAudioSettings();
@@ -82,6 +74,4 @@ private:
 	TObjectPtr<USoundClass> SFXSoundClass;
 	UPROPERTY(Transient)
 	TObjectPtr<USoundClass> UISoundClass;
-	UPROPERTY(Transient)
-	TObjectPtr<USettingsAssetData> LoadedSettingsAssets;
 };
