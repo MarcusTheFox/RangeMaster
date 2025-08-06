@@ -5,6 +5,7 @@
 
 #include "JsonObjectConverter.h"
 #include "Sound/SoundWaveProcedural.h"
+#include "Core/Parsing/BeatMapParser.h"
 
 TArray<FTrackInfo> UTrackFunctionLibrary::LoadAllTracksMetadata(const FString& Directory)
 {
@@ -66,14 +67,14 @@ bool UTrackFunctionLibrary::LoadBeatMapForTrack(const FTrackInfo& Track, const F
 
 	FString BeatMapPath = FPaths::Combine(TracksDirectory, Track.TrackID.ToString(), Track.BeatMapFile);
 
-	FString JsonString;
-	if (!FFileHelper::LoadFileToString(JsonString, *BeatMapPath))
+	TArray<FString> Lines;
+	if (!FFileHelper::LoadFileToStringArray(Lines, *BeatMapPath))
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to read beatmap file to string: %s"), *Track.BeatMapFile);
+		UE_LOG(LogTemp, Error, TEXT("Failed to read beatmap file to string array: %s"), *BeatMapPath);
 		return false;
 	}
 
-	return FJsonObjectConverter::JsonArrayStringToUStruct(JsonString, &OutBeatMap, 0, 0);
+	return FBeatMapParser::Parse(Lines, OutBeatMap);
 }
 
 USoundWaveProcedural* UTrackFunctionLibrary::CreateProceduralSoundWave(const FString& FilePath)
@@ -113,29 +114,15 @@ float UTrackFunctionLibrary::GetWavDurationSeconds(const FString& FilePath)
 
 int32 UTrackFunctionLibrary::GetBeatMapTargetCount(const FString& FilePath)
 {
-	FString JsonString;
-	TArray<FBeatMapData> BeatMap;
+	TArray<FString> Lines;
 	
-	if (!FFileHelper::LoadFileToString(JsonString, *FilePath))
+	if (!FFileHelper::LoadFileToStringArray(Lines, *FilePath))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Could not read beatmap file for counting targets: %s"), *FilePath);
 		return 0;
 	}
-	if (!FJsonObjectConverter::JsonArrayStringToUStruct(JsonString, &BeatMap, 0, 0))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Could not parse beatmap JSON for counting targets: %s"), *FilePath);
-		return 0;
-	}
-
-	int32 Count = 0;
-	for (const FBeatMapData& Beat : BeatMap)
-	{
-		if (Beat.ShotPower > 0)
-		{
-			Count++;
-		}
-	}
-	return Count;
+	
+	return FBeatMapParser::CountTargets(Lines);
 }
 
 bool UTrackFunctionLibrary::LoadAndParseWavInfo(const FString& FilePath, TArray<uint8>& OutRawData,
