@@ -4,8 +4,8 @@
 #include "FunctionLibraries/TrackFunctionLibrary.h"
 
 #include "JsonObjectConverter.h"
-#include "Sound/SoundWaveProcedural.h"
 #include "Core/Parsing/BeatMapParser.h"
+#include "Sound/SoundWaveProcedural.h"
 
 TArray<FTrackInfo> UTrackFunctionLibrary::LoadAllTracksMetadata(const FString& Directory)
 {
@@ -56,7 +56,7 @@ TArray<FTrackInfo> UTrackFunctionLibrary::LoadAllTracksMetadata(const FString& D
 }
 
 bool UTrackFunctionLibrary::LoadBeatMapForTrack(const FTrackInfo& Track, const FString& TracksDirectory,
-	TArray<FBeatMapData>& OutBeatMap)
+	TArray<FBeatMapData>& OutBeatMap, FBeatMapSettings& OutSettings)
 {
 	if (Track.BeatMapFile.IsEmpty())
 	{
@@ -74,7 +74,7 @@ bool UTrackFunctionLibrary::LoadBeatMapForTrack(const FTrackInfo& Track, const F
 		return false;
 	}
 
-	return FBeatMapParser::Parse(Lines, OutBeatMap);
+	return FBeatMapParser::Parse(Lines, OutBeatMap, OutSettings);
 }
 
 USoundWaveProcedural* UTrackFunctionLibrary::CreateProceduralSoundWave(const FString& FilePath)

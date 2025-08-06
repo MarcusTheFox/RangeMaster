@@ -1,14 +1,13 @@
 ﻿#include "Core/Parsing/BeatMapParser.h"
 
-bool FBeatMapParser::Parse(const TArray<FString>& Lines, TArray<FBeatMapData>& OutBeatMap)
+bool FBeatMapParser::Parse(const TArray<FString>& Lines, TArray<FBeatMapData>& OutBeatMap, FBeatMapSettings& OutSettings)
 {
 	OutBeatMap.Empty();
 
-	FBeatMapSettings Settings;
 	int32 CurrentLineIndex = 0;
 
-	ParseHeader(Lines, CurrentLineIndex, Settings);
-	ParseNotes(Lines, CurrentLineIndex, Settings, OutBeatMap);
+	ParseHeader(Lines, CurrentLineIndex, OutSettings);
+	ParseNotes(Lines, CurrentLineIndex, OutSettings, OutBeatMap);
 	
 	return true;
 }
@@ -87,8 +86,12 @@ void FBeatMapParser::ParseHeader(const TArray<FString>& Lines, int32& InOutLineI
 				Key = Key.TrimStartAndEnd();
 				Value = Value.TrimStartAndEnd();
 
-				if (Key.Equals("bpm", ESearchCase::IgnoreCase)) OutSettings.BPM = FCString::Atof(*Value);
-				else if (Key.Equals("power", ESearchCase::IgnoreCase)) OutSettings.DefaultPower = FCString::Atoi(*Value);
+				if (Key.Equals("bpm", ESearchCase::IgnoreCase))
+					OutSettings.StartBPM = FCString::Atof(*Value);
+				else if (Key.Equals("power", ESearchCase::IgnoreCase))
+					OutSettings.DefaultPower = FCString::Atoi(*Value);
+				else if (Key.Equals(TEXT("offset"), ESearchCase::IgnoreCase))
+					OutSettings.TimeOffsetMs = FCString::Atof(*Value); 
 			}
 		}
 	}
@@ -97,7 +100,7 @@ void FBeatMapParser::ParseHeader(const TArray<FString>& Lines, int32& InOutLineI
 void FBeatMapParser::ParseNotes(const TArray<FString>& Lines, int32 StartLineIndex, const FBeatMapSettings& Settings,
 	TArray<FBeatMapData>& OutBeatMap)
 {
-	float CurrentBPM = Settings.BPM;
+	float CurrentBPM = Settings.StartBPM;
 	int32 CurrentDefaultPower = Settings.DefaultPower;
 	// TODO: Добавить переменные для CurrentDefaultColor и т.д.
 	

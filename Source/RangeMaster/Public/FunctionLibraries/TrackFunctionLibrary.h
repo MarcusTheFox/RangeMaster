@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Data/Structs/BeatMapData.h"
+#include "Data/Structs/BeatMapTypes.h"
 #include "Data/Structs/TrackInfo.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Sound/SoundWaveProcedural.h"
 #include "TrackFunctionLibrary.generated.h"
 
 /**
@@ -21,7 +23,8 @@ public:
 	static TArray<FTrackInfo> LoadAllTracksMetadata(const FString& Directory);
 	
 	UFUNCTION(BlueprintCallable, Category = "Track Management")
-	static bool LoadBeatMapForTrack(const FTrackInfo& Track, const FString& TracksDirectory, TArray<FBeatMapData>& OutBeatMap);
+	static bool LoadBeatMapForTrack(const FTrackInfo& Track, const FString& TracksDirectory,
+		TArray<FBeatMapData>& OutBeatMap, FBeatMapSettings& OutSettings);
 	
 	UFUNCTION(BlueprintCallable, Category = "Track Management")
 	static USoundWaveProcedural* CreateProceduralSoundWave(const FString& FilePath);

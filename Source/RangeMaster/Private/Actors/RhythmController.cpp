@@ -1,5 +1,6 @@
 #include "Actors/RhythmController.h"
 #include "Actors/SpawnerManager.h"
+#include "Core/Parsing/BeatMapParser.h"
 #include "FunctionLibraries/BeatMapFunctionLibrary.h"
 #include "FunctionLibraries/TrackFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
@@ -150,19 +151,20 @@ void ARhythmController::SetTrackData(FTrackInfo TrackInfo)
 {
     TArray<FBeatMapData> BeatMap;
     USoundWave* SoundWave;
+    FBeatMapSettings BeatMapSettings;
     
-    if (!GetBeatMapFromTrackInfo(TrackInfo, BeatMap)) return;
+    if (!GetBeatMapFromTrackInfo(TrackInfo, BeatMap, BeatMapSettings)) return;
     if (!GetSoundWaveFromTrackInfo(TrackInfo, SoundWave)) return;
     
     CurrentSoundWave = SoundWave;
-    CachedTimeMap = UBeatMapFunctionLibrary::ConvertBeatMapToBeatTimes(BeatMap);
+    CachedTimeMap = UBeatMapFunctionLibrary::ConvertBeatMapToBeatTimes(BeatMap, BeatMapSettings.TimeOffsetMs);
     MusicComponent->SetSound(CurrentSoundWave);
 }
 
-bool ARhythmController::GetBeatMapFromTrackInfo(FTrackInfo TrackInfo, TArray<FBeatMapData>& OutBeatMap)
+bool ARhythmController::GetBeatMapFromTrackInfo(FTrackInfo TrackInfo, TArray<FBeatMapData>& OutBeatMap, FBeatMapSettings& OutSettings)
 {
     const FString TracksDir = FPaths::Combine(FPaths::ProjectDir(), "UserTracks");
-    if (!UTrackFunctionLibrary::LoadBeatMapForTrack(TrackInfo, TracksDir, OutBeatMap))
+    if (!UTrackFunctionLibrary::LoadBeatMapForTrack(TrackInfo, TracksDir, OutBeatMap, OutSettings))
     {
         UE_LOG(LogTemp, Error, TEXT("Failed to load beatmap for track: %s"), *TrackInfo.TrackID.ToString());
         return false;

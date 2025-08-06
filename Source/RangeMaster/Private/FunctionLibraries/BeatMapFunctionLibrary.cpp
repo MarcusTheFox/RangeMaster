@@ -39,17 +39,18 @@ TArray<FBeatMapData> UBeatMapFunctionLibrary::GetBeatMapData(UDataTable* BeatMap
 
 TArray<FTimeMapData> UBeatMapFunctionLibrary::GetTimeMapData(UDataTable* BeatMapTable)
 {
-	return ConvertBeatMapToBeatTimes(GetBeatMapData(BeatMapTable));
+	return ConvertBeatMapToBeatTimes(GetBeatMapData(BeatMapTable), 0);
 }
 
-TArray<FTimeMapData> UBeatMapFunctionLibrary::ConvertBeatMapToBeatTimes(TArray<FBeatMapData> BeatMapData)
+TArray<FTimeMapData> UBeatMapFunctionLibrary::ConvertBeatMapToBeatTimes(TArray<FBeatMapData> BeatMapData, float TimeOffsetMs)
 {
 	TArray<FTimeMapData> BeatTimes;
 	if (BeatMapData.Num() == 0) return BeatTimes;
 
 	BeatTimes.Reserve(BeatMapData.Num());
+	
+	double CurrentTime = TimeOffsetMs / 1000.0;
 
-	double CurrentTime = 0.0f;
 	float PreviousBeat = 0.0f;
 	float CurrentBPM = 120.0f;
 	

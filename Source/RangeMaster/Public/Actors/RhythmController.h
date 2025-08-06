@@ -7,6 +7,7 @@
 #include "Data/Structs/BeatMapData.h"
 #include "Actors/SpawnerManager.h"
 #include "Actors/Target.h"
+#include "Core/Parsing/BeatMapParser.h"
 #include "Data/Structs/TimeMapData.h"
 #include "Data/Structs/TrackDataRow.h"
 #include "Data/Structs/TrackInfo.h"
@@ -64,7 +65,7 @@ public:
     void SetTrackData(FTrackInfo TrackInfo);
 
 private:
-    static bool GetBeatMapFromTrackInfo(FTrackInfo TrackInfo, TArray<FBeatMapData>& OutBeatMap);
+    static bool GetBeatMapFromTrackInfo(FTrackInfo TrackInfo, TArray<FBeatMapData>& OutBeatMap, FBeatMapSettings& OutSettings);
     static bool GetSoundWaveFromTrackInfo(FTrackInfo TrackInfo, USoundWave*& OutSoundWave);
     
     UPROPERTY()

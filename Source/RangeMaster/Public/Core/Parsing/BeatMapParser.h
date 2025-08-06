@@ -2,18 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "Data/Structs/BeatMapData.h"
-
-struct FBeatMapSettings
-{
-	float BPM = 120.0f;
-	int32 DefaultPower = 1500;
-	float TimeOffset = 0.0f;
-};
+#include "Data/Structs/BeatMapTypes.h"
 
 class FBeatMapParser
 {
 public:
-	static bool Parse(const TArray<FString>& Lines, TArray<FBeatMapData>& OutBeatMap);
+	static bool Parse(const TArray<FString>& Lines, TArray<FBeatMapData>& OutBeatMap, FBeatMapSettings& OutSettings);
 	static int32 CountTargets(const TArray<FString>& Lines);
 	
 private:
