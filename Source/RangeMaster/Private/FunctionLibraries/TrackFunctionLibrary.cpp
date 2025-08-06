@@ -5,6 +5,7 @@
 
 #include "JsonObjectConverter.h"
 #include "Core/Parsing/BeatMapParser.h"
+#include "Settings/RangeMasterProjectSettings.h"
 #include "Sound/SoundWaveProcedural.h"
 
 TArray<FTrackInfo> UTrackFunctionLibrary::LoadAllTracksMetadata(const FString& Directory)
@@ -83,6 +84,23 @@ USoundWaveProcedural* UTrackFunctionLibrary::CreateProceduralSoundWave(const FSt
 	FWaveModInfo WaveInfo;
 
 	if (!LoadAndParseWavInfo(FilePath, RawFileData, WaveInfo)) return nullptr;
+	
+	const URangeMasterProjectSettings* ProjectSettings = GetDefault<URangeMasterProjectSettings>();
+	if (!ProjectSettings)
+	{
+		UE_LOG(LogTemp, Error, TEXT("CreateProceduralSoundWave: Failed to get Range Master Project Settings!"));
+	}
+	
+	USoundClass* MusicSoundClass = nullptr;
+	if (ProjectSettings)
+	{
+		MusicSoundClass = ProjectSettings->MusicSoundClass.LoadSynchronous();
+	}
+	
+	if (!MusicSoundClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("CreateProceduralSoundWave: Music Sound Class is not set in Project Settings! Procedural music will use master volume."));
+	}
 
 	USoundWaveProcedural* ProceduralSoundWave = NewObject<USoundWaveProcedural>();
 	if (!ProceduralSoundWave)
@@ -95,7 +113,13 @@ USoundWaveProcedural* UTrackFunctionLibrary::CreateProceduralSoundWave(const FSt
 	ProceduralSoundWave->NumChannels = *WaveInfo.pChannels;
 	ProceduralSoundWave->Duration = CalculateDurationFromWavInfo(WaveInfo);
 	ProceduralSoundWave->SoundGroup = SOUNDGROUP_Default;
+	ProceduralSoundWave->VirtualizationMode = EVirtualizationMode::PlayWhenSilent;
 	ProceduralSoundWave->bLooping = false;
+	
+	if (MusicSoundClass)
+	{
+		ProceduralSoundWave->SoundClassObject = MusicSoundClass;
+	}
 	
 	ProceduralSoundWave->QueueAudio(WaveInfo.SampleDataStart, WaveInfo.SampleDataSize);
 	
