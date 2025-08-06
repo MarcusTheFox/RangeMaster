@@ -5,6 +5,7 @@
 #include "FunctionLibraries/BeatMapFunctionLibrary.h"
 #include "FunctionLibraries/GameSaveFunctionLibrary.h"
 #include "FunctionLibraries/RankFunctionLibrary.h"
+#include "FunctionLibraries/TrackFunctionLibrary.h"
 
 ARangeMasterGameMode::ARangeMasterGameMode()
 {
@@ -26,16 +27,18 @@ void ARangeMasterGameMode::HandleMusicFinished()
     OnMusicFinished();
 }
 
-void ARangeMasterGameMode::StartGameRequest_Implementation(FTrackDataRow TrackData)
+void ARangeMasterGameMode::StartGameRequest_Implementation(FTrackInfo TrackInfo)
 {
-    CurrentTrackData = TrackData; 
+    CurrentTrackData = TrackInfo; 
     
     ResetHitTypeCounts();
     if (ScoreSystem)
     {
         ScoreSystem->ResetAllStats();
     }
-    RhythmController->SetTrackData(TrackData);
+    
+    RhythmController->SetTrackData(CurrentTrackData);
+    
     StartPreparePhase();
 }
 
@@ -91,12 +94,8 @@ void ARangeMasterGameMode::OnMusicFinished()
 {
     FName TrackID = CurrentTrackData.TrackID;
     int32 Score = ScoreSystem ? ScoreSystem->GetScore() : 0;
-    int32 TotalBeats = 0;
-    if (RhythmController && RhythmController->BeatMapTable)
-    {
-        TotalBeats = UBeatMapFunctionLibrary::GetTotalTargetCount(RhythmController->BeatMapTable);
-    }
-    ETrackRank Rank = URankFunctionLibrary::CalculateTrackRank(HitTypeCounts, TotalBeats);
+    ETrackRank Rank = URankFunctionLibrary::CalculateTrackRank(HitTypeCounts, CurrentTrackData.TotalTargets);
+    
     if (!bWasForceStopped)
     {
         UGameSaveFunctionLibrary::SaveTrackResult(TrackID, Score, Rank);

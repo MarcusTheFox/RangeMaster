@@ -27,22 +27,22 @@ TArray<T> UBeatMapFunctionLibrary::GetDataFromDataTable(UDataTable* DataTable)
 	return Data;
 }
 
-inline TArray<FTrackDataRow> UBeatMapFunctionLibrary::GetTrackData(UDataTable* TrackDataTable)
+TArray<FTrackDataRow> UBeatMapFunctionLibrary::GetTrackData(UDataTable* TrackDataTable)
 {
 	return GetDataFromDataTable<FTrackDataRow>(TrackDataTable);
 }
 
-inline TArray<FBeatMapData> UBeatMapFunctionLibrary::GetBeatMapData(UDataTable* BeatMapTable)
+TArray<FBeatMapData> UBeatMapFunctionLibrary::GetBeatMapData(UDataTable* BeatMapTable)
 {
 	return GetDataFromDataTable<FBeatMapData>(BeatMapTable);
 }
 
-inline TArray<FTimeMapData> UBeatMapFunctionLibrary::GetTimeMapData(UDataTable* BeatMapTable)
+TArray<FTimeMapData> UBeatMapFunctionLibrary::GetTimeMapData(UDataTable* BeatMapTable)
 {
 	return ConvertBeatMapToBeatTimes(GetBeatMapData(BeatMapTable));
 }
 
-inline TArray<FTimeMapData> UBeatMapFunctionLibrary::ConvertBeatMapToBeatTimes(TArray<FBeatMapData> BeatMapData)
+TArray<FTimeMapData> UBeatMapFunctionLibrary::ConvertBeatMapToBeatTimes(TArray<FBeatMapData> BeatMapData)
 {
 	TArray<FTimeMapData> BeatTimes;
 	if (BeatMapData.Num() == 0) return BeatTimes;
@@ -86,7 +86,7 @@ inline TArray<FTimeMapData> UBeatMapFunctionLibrary::ConvertBeatMapToBeatTimes(T
 	return BeatTimes;
 }
 
-inline float UBeatMapFunctionLibrary::GetBeatMapDuration(UDataTable* BeatMapTable)
+float UBeatMapFunctionLibrary::GetBeatMapDuration(UDataTable* BeatMapTable)
 {
 	TArray<FTimeMapData> BeatMapData = GetTimeMapData(BeatMapTable);
 	
@@ -107,7 +107,7 @@ inline float UBeatMapFunctionLibrary::GetBeatMapDuration(UDataTable* BeatMapTabl
 	return MaxTime;
 }
 
-inline int32 UBeatMapFunctionLibrary::GetTotalTargetCount(UDataTable* BeatMapTable)
+int32 UBeatMapFunctionLibrary::GetTotalTargetCount(UDataTable* BeatMapTable)
 {
 	const TArray<FBeatMapData> BeatMapData = GetBeatMapData(BeatMapTable);
 	return Algo::CountIf(BeatMapData, [](const FBeatMapData& Data)

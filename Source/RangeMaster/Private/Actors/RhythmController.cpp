@@ -1,7 +1,9 @@
 #include "Actors/RhythmController.h"
 #include "Actors/SpawnerManager.h"
 #include "FunctionLibraries/BeatMapFunctionLibrary.h"
+#include "FunctionLibraries/TrackFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundWaveProcedural.h"
 
 ARhythmController::ARhythmController()
 {
@@ -22,6 +24,7 @@ void ARhythmController::StopMusic_Implementation()
 
 void ARhythmController::PlayMusic_Implementation()
 {
+    bHasFinished = false; 
     LastSpawnedTargetIndex = 0;
     if (MusicComponent)
     {
@@ -50,11 +53,31 @@ void ARhythmController::BeginPlay()
 
 void ARhythmController::HandleMusicPlaybackPercent(const USoundWave* PlayingSoundWave, float PlaybackPercent)
 {
+    if (bHasFinished || !CurrentSoundWave)
+    {
+        return;
+    }
+
+    if (CurrentSoundWave->IsA<USoundWaveProcedural>())
+    {
+        if (PlaybackPercent >= 1.0f)
+        {
+            StopMusic();
+            return;
+        }
+    }
+    
     OnMusicPlaybackPercent(PlayingSoundWave, PlaybackPercent);
 }
 
 void ARhythmController::HandleMusicPlaybackFinished()
 {
+    if (bHasFinished)
+    {
+        return;
+    }
+    bHasFinished = true;
+    
     OnMusicPlaybackFinished();
 }
 
@@ -123,8 +146,41 @@ void ARhythmController::SetBeatMapTable(UDataTable* InTable)
     LastSpawnedTargetIndex = 0;
 }
 
-void ARhythmController::SetTrackData(FTrackDataRow TrackData)
+void ARhythmController::SetTrackData(FTrackInfo TrackInfo)
 {
-    SetBeatMapTable(TrackData.BeatMap);
-    MusicComponent->SetSound(TrackData.SoundWave);
+    TArray<FBeatMapData> BeatMap;
+    USoundWave* SoundWave;
+    
+    if (!GetBeatMapFromTrackInfo(TrackInfo, BeatMap)) return;
+    if (!GetSoundWaveFromTrackInfo(TrackInfo, SoundWave)) return;
+    
+    CurrentSoundWave = SoundWave;
+    CachedTimeMap = UBeatMapFunctionLibrary::ConvertBeatMapToBeatTimes(BeatMap);
+    MusicComponent->SetSound(CurrentSoundWave);
+}
+
+bool ARhythmController::GetBeatMapFromTrackInfo(FTrackInfo TrackInfo, TArray<FBeatMapData>& OutBeatMap)
+{
+    const FString TracksDir = FPaths::Combine(FPaths::ProjectDir(), "UserTracks");
+    if (!UTrackFunctionLibrary::LoadBeatMapForTrack(TrackInfo, TracksDir, OutBeatMap))
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to load beatmap for track: %s"), *TrackInfo.TrackID.ToString());
+        return false;
+    }
+    
+    return true;
+}
+
+bool ARhythmController::GetSoundWaveFromTrackInfo(FTrackInfo TrackInfo, USoundWave*& OutSoundWave)
+{
+    const FString TracksDir = FPaths::Combine(FPaths::ProjectDir(), "UserTracks");
+    const FString AudioPath = FPaths::Combine(TracksDir, TrackInfo.TrackID.ToString(), TrackInfo.AudioFile);
+    OutSoundWave = UTrackFunctionLibrary::CreateProceduralSoundWave(AudioPath);
+    if (!OutSoundWave)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to load audio for track: %s"), *TrackInfo.TrackID.ToString());
+        return false;
+    }
+
+    return true;
 }

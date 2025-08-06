@@ -9,6 +9,8 @@
 #include "Actors/Target.h"
 #include "Data/Structs/TimeMapData.h"
 #include "Data/Structs/TrackDataRow.h"
+#include "Data/Structs/TrackInfo.h"
+#include "Sound/SoundWaveProcedural.h"
 #include "RhythmController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMusicFinished);
@@ -59,15 +61,22 @@ public:
     void SetBeatMapTable(UDataTable* InTable);
 
     UFUNCTION(BlueprintCallable, Category="Music|BeatMap")
-    void SetTrackData(FTrackDataRow TrackData);
+    void SetTrackData(FTrackInfo TrackInfo);
 
 private:
+    static bool GetBeatMapFromTrackInfo(FTrackInfo TrackInfo, TArray<FBeatMapData>& OutBeatMap);
+    static bool GetSoundWaveFromTrackInfo(FTrackInfo TrackInfo, USoundWave*& OutSoundWave);
+    
     UPROPERTY()
     ASpawnerManager* SpawnerManager = nullptr;
 
     UPROPERTY()
     TArray<ASpawner*> CachedSpawners;
+    
+    UPROPERTY()
+    TObjectPtr<USoundWave> CurrentSoundWave = nullptr;
 
     int32 LastSpawnedTargetIndex = 0;
     TArray<FTimeMapData> CachedTimeMap;
+    bool bHasFinished = false;
 }; 
