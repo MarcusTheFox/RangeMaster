@@ -145,7 +145,7 @@ void FBeatMapParser::ParseNotes(const TArray<FString>& Lines, int32 StartLineInd
 					{
 						BpmForNextNote = FCString::Atof(*Value);
 					}
-					else if (Command.Equals("DefaultPower", ESearchCase::IgnoreCase))
+					else if (Command.Equals("Power", ESearchCase::IgnoreCase))
 					{
 						CurrentDefaultPower = FCString::Atoi(*Value);
 					}
