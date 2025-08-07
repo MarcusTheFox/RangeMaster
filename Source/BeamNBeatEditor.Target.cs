@@ -3,9 +3,9 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class RangeMasterEditorTarget : TargetRules
+public class BeamNBeatEditorTarget : TargetRules
 {
-	public RangeMasterEditorTarget(TargetInfo Target) : base(Target)
+	public BeamNBeatEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V4;

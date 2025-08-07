@@ -3,9 +3,9 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class RangeMasterTarget : TargetRules
+public class BeamNBeatTarget : TargetRules
 {
-	public RangeMasterTarget(TargetInfo Target) : base(Target)
+	public BeamNBeatTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
