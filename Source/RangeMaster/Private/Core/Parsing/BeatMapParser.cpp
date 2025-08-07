@@ -128,9 +128,8 @@ void FBeatMapParser::ParseNotes(const TArray<FString>& Lines, int32 StartLineInd
 		TArray<FString> EventItems;
 		EventStr.TrimStartAndEnd().ParseIntoArray(EventItems, TEXT(";"));
 
-		float BpmForThisTimestamp = 0.0f;
-		FString NoteEventsString;
-
+		float BpmForNextNote = 0.0f;
+		
 		for (const FString& EventItem : EventItems)
 		{
 			FString CleanItem = EventItem.TrimStartAndEnd();
@@ -144,7 +143,7 @@ void FBeatMapParser::ParseNotes(const TArray<FString>& Lines, int32 StartLineInd
 
 					if (Command.Equals("BPM", ESearchCase::IgnoreCase))
 					{
-						BpmForThisTimestamp = FCString::Atof(*Value);
+						BpmForNextNote = FCString::Atof(*Value);
 					}
 					else if (Command.Equals("DefaultPower", ESearchCase::IgnoreCase))
 					{
@@ -155,27 +154,22 @@ void FBeatMapParser::ParseNotes(const TArray<FString>& Lines, int32 StartLineInd
 			}
 			else
 			{
-				if (!NoteEventsString.IsEmpty()) NoteEventsString.Append(",");
-				NoteEventsString.Append(CleanItem);
+				FBeatMapSettings CurrentEventSettings = Settings;
+				CurrentEventSettings.DefaultPower = CurrentDefaultPower;
+				
+				ParseNoteEvent(CleanItem, TotalBeat, BpmForNextNote, CurrentEventSettings, OutBeatMap);
+				BpmForNextNote = 0.0f;
 			}
 		}
 
-		FBeatMapSettings CurrentEventSettings = Settings;
-		CurrentEventSettings.DefaultPower = CurrentDefaultPower;
-		// TODO: Обновить CurrentEventSettings другими текущими настройками
-
-		if (!NoteEventsString.IsEmpty())
-		{
-			ParseNoteEvent(NoteEventsString, TotalBeat, BpmForThisTimestamp, CurrentEventSettings, OutBeatMap);
-		}
-		else if (BpmForThisTimestamp > 0.0f)
+		if (BpmForNextNote > 0.0f)
 		{
 			FBeatMapData BpmMarker;
 			BpmMarker.SpawnerID = -1;
 			BpmMarker.ShotPower = 0;
 			BpmMarker.BeatIndex = FMath::FloorToInt(TotalBeat);
 			BpmMarker.BeatFraction = TotalBeat - BpmMarker.BeatIndex;
-			BpmMarker.BPM = BpmForThisTimestamp;
+			BpmMarker.BPM = BpmForNextNote;
 			OutBeatMap.Add(BpmMarker);
 		}
 	}
