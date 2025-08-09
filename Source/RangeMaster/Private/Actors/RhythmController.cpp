@@ -139,21 +139,6 @@ void ARhythmController::SpawnTargetsByBeatMap_Implementation(float CurrentTime, 
     }
 }
 
-void ARhythmController::SetBeatMapTable(UDataTable* InTable)
-{
-    BeatMapTable = InTable;
-    if (BeatMapTable)
-    {
-        CachedTimeMap = UBeatMapFunctionLibrary::GetTimeMapData(BeatMapTable);
-    }
-    else
-    {
-        CachedTimeMap.Empty();
-    }
-
-    LastSpawnedTargetIndex = 0;
-}
-
 void ARhythmController::SetTrackData(FTrackInfo TrackInfo)
 {
     TArray<FBeatMapData> BeatMap;

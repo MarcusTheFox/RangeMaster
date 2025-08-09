@@ -28,9 +28,6 @@ public:
     UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="Music")
     FOnMusicFinished OnMusicFinished;
 
-    UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Music|BeatMap")
-    UDataTable* BeatMapTable = nullptr;
-
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Music")
     void StopMusic();
 
@@ -54,9 +51,6 @@ public:
 
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Music|Spawning")
     void SpawnTargetsByBeatMap(float CurrentTime, TSubclassOf<ATarget> TargetClass);
-
-    UFUNCTION(BlueprintCallable, Category="Music|BeatMap")
-    void SetBeatMapTable(UDataTable* InTable);
 
     UFUNCTION(BlueprintCallable, Category="Music|BeatMap")
     void SetTrackData(FTrackInfo TrackInfo);
