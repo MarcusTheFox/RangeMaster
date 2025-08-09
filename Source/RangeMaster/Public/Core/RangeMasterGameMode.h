@@ -2,13 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "Actors/RhythmController.h"
-#include "GameFramework/GameModeBase.h"
-#include "Data/Enums/HitType.h"
 #include "Components/ScoreSystemComponent.h"
-#include "Data/Structs/GameResultData.h"
+#include "Data/Enums/HitType.h"
 #include "Data/Structs/CountdownInfo.h"
+#include "Data/Structs/GameResultData.h"
 #include "Data/Structs/TimeMapData.h"
 #include "Data/Structs/TrackInfo.h"
+#include "GameFramework/GameModeBase.h"
 #include "RangeMasterGameMode.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHitRegistered, EHitType, HitType);
@@ -19,6 +19,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCountdownStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPreparePhaseStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPreparePhaseFinished);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStarted);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStopped);
 
 UCLASS()
 class ARangeMasterGameMode : public AGameModeBase
@@ -54,6 +55,9 @@ public:
 
     UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="Game")
     FOnGameStarted OnGameStarted;
+    
+    UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="Game")
+    FOnGameStopped OnGameStopped;
 
     UPROPERTY(BlueprintReadOnly, Category="Game")
     TMap<EHitType, int32> HitTypeCounts;

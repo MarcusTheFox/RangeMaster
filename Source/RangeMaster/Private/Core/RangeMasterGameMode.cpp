@@ -1,4 +1,5 @@
 #include "Core/RangeMasterGameMode.h"
+
 #include "Data/Enums/TrackRank.h"
 #include "FunctionLibraries/BeatMapFunctionLibrary.h"
 #include "FunctionLibraries/GameSaveFunctionLibrary.h"
@@ -96,7 +97,9 @@ void ARangeMasterGameMode::EndGame()
     Result.Rank = Rank;
     Result.MaxCombo = ScoreSystem ? ScoreSystem->GetMaxCombo() : 0;
     Result.HitTypeCounts = HitTypeCounts;
-    OnGameFinished.Broadcast(Result);
+
+    if (bWasForceStopped) OnGameStopped.Broadcast();
+    else OnGameFinished.Broadcast(Result);
 }
 
 void ARangeMasterGameMode::OnBeatReceived(const FTimeMapData& TimeMapData)
