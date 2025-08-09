@@ -1,5 +1,7 @@
 #include "Actors/RhythmController.h"
+
 #include "Actors/SpawnerManager.h"
+#include "Components/AudioComponent.h"
 #include "FunctionLibraries/BeatMapFunctionLibrary.h"
 #include "FunctionLibraries/TrackFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
