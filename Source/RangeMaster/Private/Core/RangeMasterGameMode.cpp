@@ -76,7 +76,7 @@ void ARangeMasterGameMode::ForceStopGame_Implementation()
         RhythmController->Stop();
     }
     DestroyAllActiveTargets();
-    EndGame();
+    OnGameStopped.Broadcast();
 }
 
 void ARangeMasterGameMode::EndGame()
@@ -98,8 +98,7 @@ void ARangeMasterGameMode::EndGame()
     Result.MaxCombo = ScoreSystem ? ScoreSystem->GetMaxCombo() : 0;
     Result.HitTypeCounts = HitTypeCounts;
 
-    if (bWasForceStopped) OnGameStopped.Broadcast();
-    else OnGameFinished.Broadcast(Result);
+    OnGameFinished.Broadcast(Result);
 }
 
 void ARangeMasterGameMode::OnBeatReceived(const FTimeMapData& TimeMapData)
