@@ -14,8 +14,7 @@ public:
     ASpawner();
 
     UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-    void SpawnTarget(TSubclassOf<ATarget> TargetClass, int32 Power);
-    virtual void SpawnTarget_Implementation(TSubclassOf<ATarget> TargetClass, int32 Power);
+    ATarget* SpawnTarget(TSubclassOf<ATarget> TargetClass, int32 Power);
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawner")
     FVector SpawnOffset = FVector(0, 0, 200);

@@ -1,6 +1,5 @@
 #include "Actors/RhythmController.h"
 #include "Actors/SpawnerManager.h"
-#include "Core/Parsing/BeatMapParser.h"
 #include "FunctionLibraries/BeatMapFunctionLibrary.h"
 #include "FunctionLibraries/TrackFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
@@ -21,6 +20,7 @@ void ARhythmController::StopMusic_Implementation()
     {
         MusicComponent->Stop();
     }
+    DestroyAllActiveTargets();
 }
 
 void ARhythmController::PlayMusic_Implementation()
@@ -63,7 +63,7 @@ void ARhythmController::HandleMusicPlaybackPercent(const USoundWave* PlayingSoun
     {
         if (PlaybackPercent >= 1.0f)
         {
-            StopMusic();
+            MusicComponent->Stop();
             return;
         }
     }
@@ -78,8 +78,11 @@ void ARhythmController::HandleMusicPlaybackFinished()
         return;
     }
     bHasFinished = true;
-    
-    OnMusicPlaybackFinished();
+
+    if (IsGameFinished())
+    {
+        GetWorld()->GetTimerManager().SetTimer(StopGameTimer, this, &ARhythmController::OnMusicPlaybackFinished, StopGameTime, false);
+    }
 }
 
 void ARhythmController::OnMusicPlaybackPercent_Implementation(const USoundWave* PlayingSoundWave, float PlaybackPercent)
@@ -122,7 +125,9 @@ void ARhythmController::SpawnTargetsByBeatMap_Implementation(float CurrentTime, 
             if (Data.ShotPower == 0) continue;
             if (CachedSpawners.IsValidIndex(Data.SpawnerID) && CachedSpawners[Data.SpawnerID])
             {
-                CachedSpawners[Data.SpawnerID]->SpawnTarget(TargetClass, Data.ShotPower);
+                ATarget* NewTarget = CachedSpawners[Data.SpawnerID]->SpawnTarget(TargetClass, Data.ShotPower);
+                NewTarget->OnTargetDestroyed.AddDynamic(this, &ARhythmController::RemoveTargetFromActiveList);
+                ActiveTargets.Add(NewTarget);
             }
         }
         else
@@ -185,4 +190,28 @@ bool ARhythmController::GetSoundWaveFromTrackInfo(FTrackInfo TrackInfo, USoundWa
     }
 
     return true;
+}
+
+void ARhythmController::RemoveTargetFromActiveList(ATarget* Target)
+{
+    Target->OnTargetDestroyed.RemoveDynamic(this, &ARhythmController::RemoveTargetFromActiveList);
+    ActiveTargets.Remove(Target);
+
+    if (IsGameFinished())
+    {
+        GetWorld()->GetTimerManager().SetTimer(StopGameTimer, this, &ARhythmController::OnMusicPlaybackFinished, StopGameTime, false);
+    }
+}
+
+void ARhythmController::DestroyAllActiveTargets()
+{
+    for (ATarget* Target : ActiveTargets)
+    {
+        Target->DestroyTarget();
+    }
+}
+
+bool ARhythmController::IsGameFinished()
+{
+    return bHasFinished && ActiveTargets.Num() == 0 && LastSpawnedTargetIndex == CachedTimeMap.Num();
 }

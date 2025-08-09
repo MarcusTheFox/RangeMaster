@@ -5,6 +5,8 @@
 #include "Interfaces/HittableInterface.h"
 #include "Target.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTargetDestroyed, ATarget*, Target);
+
 UCLASS()
 class ATarget : public AActor, public IHittableInterface
 {
@@ -16,10 +18,12 @@ public:
 
     UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
     void DestroyTarget();
-    virtual void DestroyTarget_Implementation();
 
     UFUNCTION(BlueprintCallable)
     void SetImpulse(const FVector& Impulse);
+
+    UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Target")
+    FOnTargetDestroyed OnTargetDestroyed;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Target")
     int32 Points = 1000;

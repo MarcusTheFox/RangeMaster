@@ -28,22 +28,22 @@ void ASpawner::BeginPlay()
     }
 }
 
-void ASpawner::SpawnTarget_Implementation(TSubclassOf<ATarget> TargetClass, int32 Power)
+ATarget* ASpawner::SpawnTarget_Implementation(TSubclassOf<ATarget> TargetClass, int32 Power)
 {
-    if (!TargetClass) return;
+    if (!TargetClass) return nullptr;
     UWorld* World = GetWorld();
-    if (!World) return;
+    if (!World) return nullptr;
 
     FTransform SpawnTransform = GetActorTransform();
     FVector SpawnLocation = SpawnTransform.GetLocation() + SpawnOffset;
     SpawnTransform.SetLocation(SpawnLocation);
 
     ATarget* Target = World->SpawnActor<ATarget>(TargetClass, SpawnTransform);
-    if (Target)
-    {
-        FVector Impulse = FVector::UpVector * Power;
-        Target->SetImpulse(Impulse);
-    }
+    if (!Target) return nullptr;
+    
+    FVector Impulse = FVector::UpVector * Power;
+    Target->SetImpulse(Impulse);
+    return Target;
 }
 
 void ASpawner::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,

@@ -67,6 +67,15 @@ public:
 private:
     static bool GetBeatMapFromTrackInfo(FTrackInfo TrackInfo, TArray<FBeatMapData>& OutBeatMap, FBeatMapSettings& OutSettings);
     static bool GetSoundWaveFromTrackInfo(FTrackInfo TrackInfo, USoundWave*& OutSoundWave);
+
+    UFUNCTION()
+    void RemoveTargetFromActiveList(ATarget* Target);
+
+    UFUNCTION()
+    void DestroyAllActiveTargets();
+
+    UFUNCTION()
+    bool IsGameFinished();
     
     UPROPERTY()
     ASpawnerManager* SpawnerManager = nullptr;
@@ -78,6 +87,14 @@ private:
     TObjectPtr<USoundWave> CurrentSoundWave = nullptr;
 
     int32 LastSpawnedTargetIndex = 0;
+
+    UPROPERTY()
+    TArray<ATarget*> ActiveTargets;
+    
     TArray<FTimeMapData> CachedTimeMap;
+    
     bool bHasFinished = false;
+
+    FTimerHandle StopGameTimer;
+    float StopGameTime = 2.0f;
 }; 

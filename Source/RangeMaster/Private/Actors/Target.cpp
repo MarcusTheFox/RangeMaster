@@ -26,6 +26,7 @@ void ATarget::OnHit_Implementation()
 
 void ATarget::DestroyTarget_Implementation()
 {
+    OnTargetDestroyed.Broadcast(this);
     Destroy();
 }
 
