@@ -30,10 +30,4 @@ public:
 	static TArray<FTimeMapData> GetTimeMapData(UDataTable* BeatMapTable);
 	
 	static TArray<FTimeMapData> ConvertBeatMapToBeatTimes(TArray<FBeatMapData> BeatMapData, float TimeOffsetMs);
-	
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	static float GetBeatMapDuration(UDataTable* BeatMapTable);
-	
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	static int32 GetTotalTargetCount(UDataTable* BeatMapTable);
 };

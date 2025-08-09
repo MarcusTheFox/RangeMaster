@@ -11,6 +11,7 @@
 #include "Data/Structs/TrackInfo.h"
 #include "RhythmController.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeat, const FTimeMapData&, TimeMapData);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMusicFinished);
 
 UCLASS()
@@ -22,70 +23,41 @@ public:
 
     virtual void BeginPlay() override;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Music")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Rhythm")
     UAudioComponent* MusicComponent;
 
-    UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="Music")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Rhythm")
+    FOnBeat OnBeat;
+
+    UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="Rhythm")
     FOnMusicFinished OnMusicFinished;
 
-    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Music")
-    void StopMusic();
+    UFUNCTION(BlueprintCallable, Category="Rhythm")
+    void PrepareTrack(USoundWave* SoundWave, const TArray<FTimeMapData>& TimeMap);
 
-    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Music")
-    void PlayMusic();
+    UFUNCTION(BlueprintCallable, Category="Rhythm")
+    void Play();
 
-    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Music")
-    void OnMusicPlaybackPercent(const USoundWave* PlayingSoundWave, float PlaybackPercent);
+    UFUNCTION(BlueprintCallable, Category="Rhythm")
+    void Stop();
 
-    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Music")
-    void OnMusicPlaybackFinished();
+    UFUNCTION(BlueprintPure, Category="Rhythm")
+    bool IsPlaying() const { return bIsPlaying; }
 
+private:
     UFUNCTION()
     void HandleMusicPlaybackPercent(const USoundWave* PlayingSoundWave, float PlaybackPercent);
 
     UFUNCTION()
     void HandleMusicPlaybackFinished();
-
-    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Music|Spawning")
-    void SpawnTargetsByBeatMap(float CurrentTime);
-
-    UFUNCTION(BlueprintCallable, Category="Music|BeatMap")
-    void SetTrackData(FTrackInfo TrackInfo);
-
-private:
-    static bool GetBeatMapFromTrackInfo(FTrackInfo TrackInfo, TArray<FBeatMapData>& OutBeatMap, FBeatMapSettings& OutSettings);
-    static bool GetSoundWaveFromTrackInfo(FTrackInfo TrackInfo, USoundWave*& OutSoundWave);
-
-    UFUNCTION()
-    void RemoveTargetFromActiveList(ATarget* Target);
-
-    UFUNCTION()
-    void DestroyAllActiveTargets();
-
-    UFUNCTION()
-    bool IsGameFinished();
     
-    UPROPERTY()
-    ASpawnerManager* SpawnerManager = nullptr;
+    UFUNCTION()
+    void CheckBeatAtTime(float CurrentTime);
 
-    UPROPERTY()
-    TSubclassOf<ATarget> TargetClass;
-
-    UPROPERTY()
-    TArray<ASpawner*> CachedSpawners;
-    
     UPROPERTY()
     TObjectPtr<USoundWave> CurrentSoundWave = nullptr;
-
-    int32 LastSpawnedTargetIndex = 0;
-
-    UPROPERTY()
-    TArray<ATarget*> ActiveTargets;
     
     TArray<FTimeMapData> CachedTimeMap;
-    
-    bool bHasFinished = false;
-
-    FTimerHandle StopGameTimer;
-    float StopGameTime = 2.0f;
+    int32 NextBeatIndex = 0;
+    bool bIsPlaying = false;
 }; 

@@ -149,8 +149,33 @@ int32 UTrackFunctionLibrary::GetBeatMapTargetCount(const FString& FilePath)
 	return FBeatMapParser::CountTargets(Lines);
 }
 
+bool UTrackFunctionLibrary::GetBeatMapFromTrackInfo(const FTrackInfo& TrackInfo, TArray<FBeatMapData>& OutBeatMap,
+	FBeatMapSettings& OutSettings)
+{
+	const FString TracksDir = FPaths::Combine(FPaths::ProjectDir(), "UserTracks");
+	if (!LoadBeatMapForTrack(TrackInfo, TracksDir, OutBeatMap, OutSettings))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to load beatmap for track: %s"), *TrackInfo.TrackID.ToString());
+		return false;
+	}
+	return true;
+}
+
+bool UTrackFunctionLibrary::GetSoundWaveFromTrackInfo(FTrackInfo TrackInfo, USoundWave*& OutSoundWave)
+{
+	const FString TracksDir = FPaths::Combine(FPaths::ProjectDir(), "UserTracks");
+	const FString AudioPath = FPaths::Combine(TracksDir, TrackInfo.TrackID.ToString(), TrackInfo.AudioFile);
+	OutSoundWave = CreateProceduralSoundWave(AudioPath);
+	if (!OutSoundWave)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to load audio for track: %s"), *TrackInfo.TrackID.ToString());
+		return false;
+	}
+	return true;
+}
+
 bool UTrackFunctionLibrary::LoadAndParseWavInfo(const FString& FilePath, TArray<uint8>& OutRawData,
-	FWaveModInfo& OutWaveInfo)
+                                                FWaveModInfo& OutWaveInfo)
 {
 	if (!FPaths::FileExists(FilePath))
 	{

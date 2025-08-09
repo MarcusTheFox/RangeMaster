@@ -1,12 +1,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Actors/RhythmController.h"
 #include "GameFramework/GameModeBase.h"
 #include "Data/Enums/HitType.h"
 #include "Components/ScoreSystemComponent.h"
 #include "Data/Structs/GameResultData.h"
 #include "Data/Structs/CountdownInfo.h"
-#include "Data/Structs/TrackDataRow.h"
+#include "Data/Structs/TimeMapData.h"
 #include "Data/Structs/TrackInfo.h"
 #include "RangeMasterGameMode.generated.h"
 
@@ -23,17 +24,13 @@ UCLASS()
 class ARangeMasterGameMode : public AGameModeBase
 {
     GENERATED_BODY()
+
+protected:
+    virtual void BeginPlay() override;
     
 public:
     ARangeMasterGameMode();
-
-    virtual void BeginPlay() override;
-
-    void OnMusicFinished();
-
-    UFUNCTION()
-    void HandleMusicFinished();
-
+    
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Game")
     void StartGameRequest(FTrackInfo TrackInfo);
 
@@ -63,14 +60,9 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Game")
     UScoreSystemComponent* ScoreSystem;
-
-    UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Game")
-    class ARhythmController* RhythmController = nullptr;
     
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Game")
     FTrackInfo CurrentTrackData;
-
-    // === ДЛЯ ПЛАВНОГО ОТСЧЁТА ===
 
     UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="Game|Countdown")
     FOnCountdownStarted OnCountdownStarted;
@@ -88,16 +80,50 @@ public:
     FOnPreparePhaseFinished OnPreparePhaseFinished;
 
 private:
-    bool bWasForceStopped = false;
-    FTimerHandle PrepareTimerHandle;
-    FTimerHandle CountdownTimerHandle;
-    float CountdownTime = 3.0f; // Длительность отсчёта (сек)
-    float CurrentCountdown = 0.0f;
-    float CountdownTickInterval = 0.01f; // Интервал тика для плавности
-    float PreparePhaseTime = 2.0f; // Длительность подготовки (сек)
+    void EndGame();
+    void DestroyAllActiveTargets();
+    
+    UFUNCTION()
+    void OnBeatReceived(const FTimeMapData& TimeMapData);
 
+    UFUNCTION()
+    void HandleMusicFinished();
+
+    UFUNCTION()
+    void OnTargetDestroyed(ATarget* Target);
+    
     void StartPreparePhase();
     void StartCountdown();
     void CountdownTick();
     void FinishCountdown();
+
+    UPROPERTY()
+    ARhythmController* RhythmController = nullptr;
+
+    UPROPERTY()
+    ASpawnerManager* SpawnerManager = nullptr;
+
+    UPROPERTY()
+    TArray<TObjectPtr<ASpawner>> CachedSpawners;
+
+    UPROPERTY()
+    TArray<TObjectPtr<ATarget>> ActiveTargets;
+
+    UPROPERTY()
+    TSubclassOf<ATarget> TargetClass;
+    
+    bool bWasForceStopped = false;
+    bool bMusicHasFinished = false;
+    int32 TotalTargets = 0;
+    int32 LastSpawnedTargetIndex = 0;
+    
+    FTimerHandle PrepareTimerHandle;
+    FTimerHandle CountdownTimerHandle;
+    FTimerHandle EndGameTimerHandle;
+    
+    float CountdownTime = 3.0f;
+    float CurrentCountdown = 0.0f;
+    float CountdownTickInterval = 0.01f;
+    float PreparePhaseTime = 2.0f;
+    float EndGameTime = 1.0f;
 }; 

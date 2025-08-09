@@ -34,6 +34,13 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Track Management|Metadata")
 	static int32 GetBeatMapTargetCount(const FString& FilePath);
+	
+	UFUNCTION(BlueprintCallable, Category = "Track Management")
+	static bool GetBeatMapFromTrackInfo(const FTrackInfo& TrackInfo, TArray<FBeatMapData>& OutBeatMap,
+		FBeatMapSettings& OutSettings);
+
+	UFUNCTION(BlueprintCallable, Category = "Track Management")
+	static bool GetSoundWaveFromTrackInfo(FTrackInfo TrackInfo, USoundWave*& OutSoundWave);
 
 private:
 	static bool LoadAndParseWavInfo(const FString& FilePath, TArray<uint8>& OutRawData, FWaveModInfo& OutWaveInfo);

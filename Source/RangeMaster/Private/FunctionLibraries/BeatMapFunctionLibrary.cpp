@@ -86,33 +86,3 @@ TArray<FTimeMapData> UBeatMapFunctionLibrary::ConvertBeatMapToBeatTimes(TArray<F
 
 	return BeatTimes;
 }
-
-float UBeatMapFunctionLibrary::GetBeatMapDuration(UDataTable* BeatMapTable)
-{
-	TArray<FTimeMapData> BeatMapData = GetTimeMapData(BeatMapTable);
-	
-	if (BeatMapData.Num() == 0)
-	{
-		return 0.0f;
-	}
-	
-	float MaxTime = 0.0f;
-	for (const FTimeMapData& BeatData : BeatMapData)
-	{
-		if (BeatData.Time > MaxTime)
-		{
-			MaxTime = BeatData.Time;
-		}
-	}
-	
-	return MaxTime;
-}
-
-int32 UBeatMapFunctionLibrary::GetTotalTargetCount(UDataTable* BeatMapTable)
-{
-	const TArray<FBeatMapData> BeatMapData = GetBeatMapData(BeatMapTable);
-	return Algo::CountIf(BeatMapData, [](const FBeatMapData& Data)
-	{
-		return Data.ShotPower > 0.0f;
-	});
-}
