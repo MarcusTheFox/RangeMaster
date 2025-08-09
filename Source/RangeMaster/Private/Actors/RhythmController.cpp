@@ -5,6 +5,7 @@
 #include "FunctionLibraries/BeatMapFunctionLibrary.h"
 #include "FunctionLibraries/TrackFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Settings/RangeMasterProjectSettings.h"
 #include "Sound/SoundWaveProcedural.h"
 
 ARhythmController::ARhythmController()
@@ -14,25 +15,6 @@ ARhythmController::ARhythmController()
     MusicComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("MusicComponent"));
     MusicComponent->SetupAttachment(RootComponent);
     MusicComponent->bAutoActivate = false;
-}
-
-void ARhythmController::StopMusic_Implementation()
-{
-    if (MusicComponent)
-    {
-        MusicComponent->Stop();
-    }
-    DestroyAllActiveTargets();
-}
-
-void ARhythmController::PlayMusic_Implementation()
-{
-    bHasFinished = false; 
-    LastSpawnedTargetIndex = 0;
-    if (MusicComponent)
-    {
-        MusicComponent->Play();
-    }
 }
 
 void ARhythmController::BeginPlay()
@@ -51,6 +33,34 @@ void ARhythmController::BeginPlay()
     {
         MusicComponent->OnAudioPlaybackPercent.AddDynamic(this, &ARhythmController::HandleMusicPlaybackPercent);
         MusicComponent->OnAudioFinished.AddDynamic(this, &ARhythmController::HandleMusicPlaybackFinished);
+    }
+    
+    const URangeMasterProjectSettings* ProjectSettings = URangeMasterProjectSettings::Get();
+    if (!ProjectSettings)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to get Project Settings in Init subsystem!"));
+        return;
+    }
+
+    TargetClass = ProjectSettings->TargetClass;
+}
+
+void ARhythmController::StopMusic_Implementation()
+{
+    if (MusicComponent)
+    {
+        MusicComponent->Stop();
+    }
+    DestroyAllActiveTargets();
+}
+
+void ARhythmController::PlayMusic_Implementation()
+{
+    bHasFinished = false; 
+    LastSpawnedTargetIndex = 0;
+    if (MusicComponent)
+    {
+        MusicComponent->Play();
     }
 }
 
@@ -94,7 +104,7 @@ void ARhythmController::OnMusicPlaybackPercent_Implementation(const USoundWave* 
     {
         CurrentTime = PlaybackPercent * PlayingSoundWave->Duration;
     }
-    TrySpawnTargetAtTime(CurrentTime);
+    SpawnTargetsByBeatMap(CurrentTime);
 }
 
 void ARhythmController::OnMusicPlaybackFinished_Implementation()
@@ -102,11 +112,7 @@ void ARhythmController::OnMusicPlaybackFinished_Implementation()
     OnMusicFinished.Broadcast();
 }
 
-void ARhythmController::TrySpawnTargetAtTime_Implementation(float CurrentTime)
-{
-}
-
-void ARhythmController::SpawnTargetsByBeatMap_Implementation(float CurrentTime, TSubclassOf<ATarget> TargetClass)
+void ARhythmController::SpawnTargetsByBeatMap_Implementation(float CurrentTime)
 {
     if (CachedSpawners.Num() == 0)
     {

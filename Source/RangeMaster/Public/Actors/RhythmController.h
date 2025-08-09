@@ -46,11 +46,8 @@ public:
     UFUNCTION()
     void HandleMusicPlaybackFinished();
 
-    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Music")
-    void TrySpawnTargetAtTime(float CurrentTime);
-
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Music|Spawning")
-    void SpawnTargetsByBeatMap(float CurrentTime, TSubclassOf<ATarget> TargetClass);
+    void SpawnTargetsByBeatMap(float CurrentTime);
 
     UFUNCTION(BlueprintCallable, Category="Music|BeatMap")
     void SetTrackData(FTrackInfo TrackInfo);
@@ -70,6 +67,9 @@ private:
     
     UPROPERTY()
     ASpawnerManager* SpawnerManager = nullptr;
+
+    UPROPERTY()
+    TSubclassOf<ATarget> TargetClass;
 
     UPROPERTY()
     TArray<ASpawner*> CachedSpawners;

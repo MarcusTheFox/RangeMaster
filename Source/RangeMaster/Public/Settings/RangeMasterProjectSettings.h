@@ -3,9 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Sound/SoundMix.h"
-#include "Sound/SoundClass.h"
+#include "Actors/Target.h"
 #include "Engine/DeveloperSettings.h"
+#include "Sound/SoundClass.h"
+#include "Sound/SoundMix.h"
 #include "RangeMasterProjectSettings.generated.h"
 
 /**
@@ -31,6 +32,9 @@ public:
 
 	UPROPERTY(Config, EditAnywhere, Category = "Audio")
 	TSoftObjectPtr<USoundClass> UISoundClass;
+
+	UPROPERTY(Config, EditAnywhere, Category = "Targets")
+	TSubclassOf<ATarget> TargetClass;
 
 	static const URangeMasterProjectSettings* Get()
 	{
