@@ -20,27 +20,53 @@ void ARangeMasterGameMode::BeginPlay()
     SpawnerManager = Cast<ASpawnerManager>(UGameplayStatics::GetActorOfClass(this, ASpawnerManager::StaticClass()));
     const URangeMasterProjectSettings* ProjectSettings = URangeMasterProjectSettings::Get();
 
+    if (!RhythmController || !SpawnerManager || !ProjectSettings) return;
+
+    RhythmController->OnBeat.AddDynamic(this, &ARangeMasterGameMode::OnBeatReceived);
+    RhythmController->OnMusicFinished.AddDynamic(this, &ARangeMasterGameMode::HandleMusicFinished);
     
-    if (RhythmController)
-    {
-        RhythmController->OnBeat.AddDynamic(this, &ARangeMasterGameMode::OnBeatReceived);
-        RhythmController->OnMusicFinished.AddDynamic(this, &ARangeMasterGameMode::HandleMusicFinished);
-    }
-
-    if (SpawnerManager)
-    {
-        CachedSpawners = SpawnerManager->GetSpawners();
-    }
-
-    if (ProjectSettings)
-    {
-        TargetClass = ProjectSettings->TargetClass;
-    }
+    CachedSpawners = SpawnerManager->GetSpawners();
+    TargetClass = ProjectSettings->TargetClass;
 }
 
-void ARangeMasterGameMode::StartGameRequest_Implementation(FTrackInfo TrackInfo)
+void ARangeMasterGameMode::InitStartSpot_Implementation(AActor* StartSpot, AController* NewPlayer)
+{
+    Super::InitStartSpot_Implementation(StartSpot, NewPlayer);
+    InitialPlayerTransform = StartSpot->GetActorTransform();
+}
+
+void ARangeMasterGameMode::JoinToGame(APlayerController* PlayerController)
+{
+    PlayerController->SetControlRotation(InitialPlayerTransform.Rotator());
+    PlayerController->GetPawn()->SetActorLocation(InitialPlayerTransform.GetLocation());
+    
+    bPlayerInGame = true;
+    OnPlayerJoined.Broadcast();
+}
+
+void ARangeMasterGameMode::SetGameTrack(const FTrackInfo& TrackInfo)
 {
     CurrentTrackData = TrackInfo;
+    CachedRawAudioData.Empty();
+    
+    TArray<FBeatMapData> BeatMap;
+    USoundWave* SoundWave;
+    FBeatMapSettings BeatMapSettings;
+    
+    if (!UTrackFunctionLibrary::GetBeatMapFromTrackInfo(TrackInfo, BeatMap, BeatMapSettings)) return;
+    if (!UTrackFunctionLibrary::GetRawAudioDataFromTrackInfo(TrackInfo, CachedRawAudioData)) return;
+    if (!UTrackFunctionLibrary::GetSoundWaveFromRawAudioData(CachedRawAudioData, SoundWave)) return;
+
+    const TArray<FTimeMapData> TimeMap = UBeatMapFunctionLibrary::ConvertBeatMapToBeatTimes(
+        BeatMap, BeatMapSettings.TimeOffsetMs);
+    
+    RhythmController->PrepareTrack(SoundWave, TimeMap);
+}
+
+void ARangeMasterGameMode::StartGameRequest_Implementation()
+{
+    if (!RhythmController->IsReadyToPlay() || !bPlayerInGame) return;
+    
     bWasForceStopped = false;
     bMusicHasFinished = false;
     
@@ -50,24 +76,32 @@ void ARangeMasterGameMode::StartGameRequest_Implementation(FTrackInfo TrackInfo)
         ScoreSystem->ResetAllStats();
     }
     
-    TArray<FBeatMapData> BeatMap;
-    USoundWave* SoundWave;
-    FBeatMapSettings BeatMapSettings;
-    
-    if (!UTrackFunctionLibrary::GetBeatMapFromTrackInfo(TrackInfo, BeatMap, BeatMapSettings)) return;
-    if (!UTrackFunctionLibrary::GetSoundWaveFromTrackInfo(TrackInfo, SoundWave)) return;
-
-    const TArray<FTimeMapData> TimeMap = UBeatMapFunctionLibrary::ConvertBeatMapToBeatTimes(
-        BeatMap, BeatMapSettings.TimeOffsetMs);
-    
-    RhythmController->PrepareTrack(SoundWave, TimeMap);
-    
     StartPreparePhase();
+}
+
+void ARangeMasterGameMode::RestartGameRequest()
+{
+    GetWorld()->GetTimerManager().ClearTimer(PrepareTimerHandle);
+    GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
+
+    USoundWave* SoundWave;
+    if (!UTrackFunctionLibrary::GetSoundWaveFromRawAudioData(CachedRawAudioData, SoundWave)) return;
+    
+    if (RhythmController)
+    {
+        RhythmController->Stop();
+        RhythmController->ResetMusic(SoundWave);
+    }
+    DestroyAllActiveTargets();
+    StartGameRequest();
+    OnGameRestarted.Broadcast();
 }
 
 void ARangeMasterGameMode::ForceStopGame_Implementation()
 {
     bWasForceStopped = true;
+    bPlayerInGame = false;
+    
     GetWorld()->GetTimerManager().ClearTimer(PrepareTimerHandle);
     GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
     
@@ -82,6 +116,7 @@ void ARangeMasterGameMode::ForceStopGame_Implementation()
 void ARangeMasterGameMode::EndGame()
 {
     GetWorld()->GetTimerManager().ClearTimer(EndGameTimerHandle);
+    bPlayerInGame = false;
     
     FName TrackID = CurrentTrackData.TrackID;
     int32 Score = ScoreSystem ? ScoreSystem->GetScore() : 0;

@@ -18,8 +18,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCountdownFinished);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCountdownStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPreparePhaseStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPreparePhaseFinished);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerJoined);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStopped);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameRestarted);
 
 UCLASS()
 class ARangeMasterGameMode : public AGameModeBase
@@ -28,13 +30,23 @@ class ARangeMasterGameMode : public AGameModeBase
 
 protected:
     virtual void BeginPlay() override;
+    virtual void InitStartSpot_Implementation(AActor* StartSpot, AController* NewPlayer) override;
     
 public:
     ARangeMasterGameMode();
+
+    UFUNCTION(BlueprintCallable, Category="Game")
+    void JoinToGame(APlayerController* PlayerController);
+
+    UFUNCTION(BlueprintCallable, Category="Game")
+    void SetGameTrack(const FTrackInfo& TrackInfo);
     
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Game")
-    void StartGameRequest(FTrackInfo TrackInfo);
+    void StartGameRequest();
 
+    UFUNCTION(BlueprintCallable, Category="Game")
+    void RestartGameRequest();
+    
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Game")
     void ForceStopGame();
 
@@ -58,6 +70,12 @@ public:
     
     UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="Game")
     FOnGameStopped OnGameStopped;
+    
+    UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="Game")
+    FOnGameRestarted OnGameRestarted;
+
+    UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="Game")
+    FOnPlayerJoined OnPlayerJoined;
 
     UPROPERTY(BlueprintReadOnly, Category="Game")
     TMap<EHitType, int32> HitTypeCounts;
@@ -95,7 +113,7 @@ private:
 
     UFUNCTION()
     void OnTargetDestroyed(ATarget* Target);
-    
+
     void StartPreparePhase();
     void StartCountdown();
     void CountdownTick();
@@ -115,11 +133,16 @@ private:
 
     UPROPERTY()
     TSubclassOf<ATarget> TargetClass;
-    
+
+    FTransform InitialPlayerTransform;
+
+    bool bPlayerInGame = false;
     bool bWasForceStopped = false;
     bool bMusicHasFinished = false;
     int32 TotalTargets = 0;
     int32 LastSpawnedTargetIndex = 0;
+    
+    TArray<uint8> CachedRawAudioData;
     
     FTimerHandle PrepareTimerHandle;
     FTimerHandle CountdownTimerHandle;

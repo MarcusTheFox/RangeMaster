@@ -28,6 +28,9 @@ void ARhythmController::PrepareTrack(USoundWave* SoundWave, const TArray<FTimeMa
     CurrentSoundWave = SoundWave;
     CachedTimeMap = TimeMap;
     MusicComponent->SetSound(CurrentSoundWave);
+    
+    bIsReadyToPlay = true;
+    OnReadyToPlay.Broadcast();
 }
 
 void ARhythmController::Play()
@@ -47,6 +50,15 @@ void ARhythmController::Stop()
         MusicComponent->Stop();
     }
     bIsPlaying = false;
+}
+
+void ARhythmController::ResetMusic(USoundWave* SoundWave)
+{
+    CurrentSoundWave = SoundWave;
+    if (MusicComponent)
+    {
+        MusicComponent->SetSound(CurrentSoundWave);
+    }
 }
 
 void ARhythmController::HandleMusicPlaybackPercent(const USoundWave* PlayingSoundWave, float PlaybackPercent)

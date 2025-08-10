@@ -81,9 +81,20 @@ bool UTrackFunctionLibrary::LoadBeatMapForTrack(const FTrackInfo& Track, const F
 USoundWaveProcedural* UTrackFunctionLibrary::CreateProceduralSoundWave(const FString& FilePath)
 {
     TArray<uint8> RawFileData;
-	FWaveModInfo WaveInfo;
+	
+	if (!GetRawAudioData(FilePath, RawFileData)) return nullptr;
 
-	if (!LoadAndParseWavInfo(FilePath, RawFileData, WaveInfo)) return nullptr;
+    return CreateProceduralSoundWaveFromData(RawFileData);
+}
+
+USoundWaveProcedural* UTrackFunctionLibrary::CreateProceduralSoundWaveFromData(const TArray<uint8>& RawAudioData)
+{
+	FWaveModInfo WaveInfo;
+	if (!WaveInfo.ReadWaveInfo(RawAudioData.GetData(), RawAudioData.Num()))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to parse WAV header info from cached data."));
+		return nullptr;
+	}
 	
 	const URangeMasterProjectSettings* ProjectSettings = GetDefault<URangeMasterProjectSettings>();
 	if (!ProjectSettings)
@@ -152,8 +163,7 @@ int32 UTrackFunctionLibrary::GetBeatMapTargetCount(const FString& FilePath)
 bool UTrackFunctionLibrary::GetBeatMapFromTrackInfo(const FTrackInfo& TrackInfo, TArray<FBeatMapData>& OutBeatMap,
 	FBeatMapSettings& OutSettings)
 {
-	const FString TracksDir = FPaths::Combine(FPaths::ProjectDir(), "UserTracks");
-	if (!LoadBeatMapForTrack(TrackInfo, TracksDir, OutBeatMap, OutSettings))
+	if (!LoadBeatMapForTrack(TrackInfo, GetTracksDirectory(), OutBeatMap, OutSettings))
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to load beatmap for track: %s"), *TrackInfo.TrackID.ToString());
 		return false;
@@ -163,15 +173,49 @@ bool UTrackFunctionLibrary::GetBeatMapFromTrackInfo(const FTrackInfo& TrackInfo,
 
 bool UTrackFunctionLibrary::GetSoundWaveFromTrackInfo(FTrackInfo TrackInfo, USoundWave*& OutSoundWave)
 {
-	const FString TracksDir = FPaths::Combine(FPaths::ProjectDir(), "UserTracks");
-	const FString AudioPath = FPaths::Combine(TracksDir, TrackInfo.TrackID.ToString(), TrackInfo.AudioFile);
-	OutSoundWave = CreateProceduralSoundWave(AudioPath);
+	OutSoundWave = CreateProceduralSoundWave(GetAudioPathFromTrackInfo(TrackInfo));
 	if (!OutSoundWave)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to load audio for track: %s"), *TrackInfo.TrackID.ToString());
 		return false;
 	}
 	return true;
+}
+
+bool UTrackFunctionLibrary::GetSoundWaveFromRawAudioData(const TArray<uint8>& RawAudioData, USoundWave*& OutSoundWave)
+{
+	OutSoundWave = CreateProceduralSoundWaveFromData(RawAudioData);
+	if (!OutSoundWave)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to load audio from raw data"));
+		return false;
+	}
+	return true;
+}
+
+bool UTrackFunctionLibrary::GetRawAudioData(const FString AudioPath, TArray<uint8>& RawAudioData)
+{
+	if (!FPaths::FileExists(AudioPath) || !FFileHelper::LoadFileToArray(RawAudioData, *AudioPath))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to load WAV file into array: %s"), *AudioPath);
+		return false;
+	}
+	return true;
+}
+
+bool UTrackFunctionLibrary::GetRawAudioDataFromTrackInfo(const FTrackInfo& TrackInfo, TArray<uint8>& RawAudioData)
+{
+	return GetRawAudioData(GetAudioPathFromTrackInfo(TrackInfo), RawAudioData);
+}
+
+FString UTrackFunctionLibrary::GetTracksDirectory()
+{
+	return FPaths::Combine(FPaths::ProjectDir(), "UserTracks");
+}
+
+FString UTrackFunctionLibrary::GetAudioPathFromTrackInfo(const FTrackInfo& TrackInfo)
+{
+	return FPaths::Combine(GetTracksDirectory(), TrackInfo.TrackID.ToString(), TrackInfo.AudioFile);
 }
 
 bool UTrackFunctionLibrary::LoadAndParseWavInfo(const FString& FilePath, TArray<uint8>& OutRawData,

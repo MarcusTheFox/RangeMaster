@@ -12,6 +12,7 @@
 #include "RhythmController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeat, const FTimeMapData&, TimeMapData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReadyToPlay);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMusicFinished);
 
 UCLASS()
@@ -30,6 +31,9 @@ public:
     FOnBeat OnBeat;
 
     UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="Rhythm")
+    FOnReadyToPlay OnReadyToPlay;
+
+    UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="Rhythm")
     FOnMusicFinished OnMusicFinished;
 
     UFUNCTION(BlueprintCallable, Category="Rhythm")
@@ -41,8 +45,14 @@ public:
     UFUNCTION(BlueprintCallable, Category="Rhythm")
     void Stop();
 
+    UFUNCTION(BlueprintCallable, Category="Rhythm")
+    void ResetMusic(USoundWave* SoundWave);
+
     UFUNCTION(BlueprintPure, Category="Rhythm")
     bool IsPlaying() const { return bIsPlaying; }
+
+    UFUNCTION(BlueprintCallable, Category="Rhythm")
+    bool IsReadyToPlay() const { return bIsReadyToPlay; }
 
 private:
     UFUNCTION()
@@ -59,5 +69,6 @@ private:
     
     TArray<FTimeMapData> CachedTimeMap;
     int32 NextBeatIndex = 0;
+    bool bIsReadyToPlay = false;
     bool bIsPlaying = false;
 }; 

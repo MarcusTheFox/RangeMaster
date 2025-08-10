@@ -28,6 +28,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Track Management")
 	static USoundWaveProcedural* CreateProceduralSoundWave(const FString& FilePath);
+
+	UFUNCTION(BlueprintCallable, Category = "Track Management")
+	static USoundWaveProcedural* CreateProceduralSoundWaveFromData(const TArray<uint8>& RawAudioData);
 	
 	UFUNCTION(BlueprintCallable, Category = "Track Management|Metadata")
 	static float GetWavDurationSeconds(const FString& FilePath);
@@ -42,7 +45,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Track Management")
 	static bool GetSoundWaveFromTrackInfo(FTrackInfo TrackInfo, USoundWave*& OutSoundWave);
 
+	UFUNCTION(BlueprintCallable, Category = "Track Management")
+	static bool GetSoundWaveFromRawAudioData(const TArray<uint8>& RawAudioData, USoundWave*& OutSoundWave);
+
+	UFUNCTION(BlueprintCallable, Category = "Track Management")
+	static bool GetRawAudioData(const FString AudioPath, TArray<uint8>& RawAudioData);
+
+	UFUNCTION(BlueprintCallable, Category = "Track Management")
+	static bool GetRawAudioDataFromTrackInfo(const FTrackInfo& TrackInfo, TArray<uint8>& RawAudioData);
+
 private:
+	static FString GetTracksDirectory();
+	static FString GetAudioPathFromTrackInfo(const FTrackInfo& TrackInfo);
 	static bool LoadAndParseWavInfo(const FString& FilePath, TArray<uint8>& OutRawData, FWaveModInfo& OutWaveInfo);
 	static float CalculateDurationFromWavInfo(const FWaveModInfo& WaveInfo);
 };
