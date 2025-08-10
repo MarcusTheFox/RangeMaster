@@ -39,6 +39,7 @@ void ARhythmController::Play()
     {
         NextBeatIndex = 0;
         bIsPlaying = true;
+        bIsReadyToPlay = false;
         MusicComponent->Play();
     }
 }
@@ -48,17 +49,16 @@ void ARhythmController::Stop()
     if (MusicComponent)
     {
         MusicComponent->Stop();
+        MusicComponent->SetSound(nullptr);
+        CurrentSoundWave = nullptr;
     }
     bIsPlaying = false;
+    bIsReadyToPlay = false;
 }
 
 void ARhythmController::ResetMusic(USoundWave* SoundWave)
 {
-    CurrentSoundWave = SoundWave;
-    if (MusicComponent)
-    {
-        MusicComponent->SetSound(CurrentSoundWave);
-    }
+    PrepareTrack(SoundWave, CachedTimeMap);
 }
 
 void ARhythmController::HandleMusicPlaybackPercent(const USoundWave* PlayingSoundWave, float PlaybackPercent)

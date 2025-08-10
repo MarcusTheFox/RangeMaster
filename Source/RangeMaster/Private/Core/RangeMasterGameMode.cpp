@@ -35,13 +35,19 @@ void ARangeMasterGameMode::InitStartSpot_Implementation(AActor* StartSpot, ACont
     InitialPlayerTransform = StartSpot->GetActorTransform();
 }
 
-void ARangeMasterGameMode::JoinToGame(APlayerController* PlayerController)
+void ARangeMasterGameMode::JoinTheGame(APlayerController* PlayerController)
 {
     PlayerController->SetControlRotation(InitialPlayerTransform.Rotator());
     PlayerController->GetPawn()->SetActorLocation(InitialPlayerTransform.GetLocation());
     
     bPlayerInGame = true;
     OnPlayerJoined.Broadcast();
+}
+
+void ARangeMasterGameMode::LeaveTheGame()
+{
+    bPlayerInGame = false;
+    OnPlayerLeaved.Broadcast();
 }
 
 void ARangeMasterGameMode::SetGameTrack(const FTrackInfo& TrackInfo)
@@ -79,10 +85,11 @@ void ARangeMasterGameMode::StartGameRequest_Implementation()
     StartPreparePhase();
 }
 
-void ARangeMasterGameMode::RestartGameRequest()
+void ARangeMasterGameMode::ResetGameRequest()
 {
     GetWorld()->GetTimerManager().ClearTimer(PrepareTimerHandle);
     GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
+    GetWorld()->GetTimerManager().ClearTimer(EndGameTimerHandle);
 
     USoundWave* SoundWave;
     if (!UTrackFunctionLibrary::GetSoundWaveFromRawAudioData(CachedRawAudioData, SoundWave)) return;
@@ -93,17 +100,17 @@ void ARangeMasterGameMode::RestartGameRequest()
         RhythmController->ResetMusic(SoundWave);
     }
     DestroyAllActiveTargets();
-    StartGameRequest();
-    OnGameRestarted.Broadcast();
+    OnGameReset.Broadcast();
 }
+
 
 void ARangeMasterGameMode::ForceStopGame_Implementation()
 {
     bWasForceStopped = true;
-    bPlayerInGame = false;
     
     GetWorld()->GetTimerManager().ClearTimer(PrepareTimerHandle);
     GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
+    GetWorld()->GetTimerManager().ClearTimer(EndGameTimerHandle);
     
     if (RhythmController)
     {
@@ -116,7 +123,6 @@ void ARangeMasterGameMode::ForceStopGame_Implementation()
 void ARangeMasterGameMode::EndGame()
 {
     GetWorld()->GetTimerManager().ClearTimer(EndGameTimerHandle);
-    bPlayerInGame = false;
     
     FName TrackID = CurrentTrackData.TrackID;
     int32 Score = ScoreSystem ? ScoreSystem->GetScore() : 0;

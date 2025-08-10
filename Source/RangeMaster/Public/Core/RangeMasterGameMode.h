@@ -19,9 +19,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCountdownStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPreparePhaseStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPreparePhaseFinished);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerJoined);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerLeaved);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStopped);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameRestarted);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameReset);
 
 UCLASS()
 class ARangeMasterGameMode : public AGameModeBase
@@ -36,7 +37,10 @@ public:
     ARangeMasterGameMode();
 
     UFUNCTION(BlueprintCallable, Category="Game")
-    void JoinToGame(APlayerController* PlayerController);
+    void JoinTheGame(APlayerController* PlayerController);
+
+    UFUNCTION(BlueprintCallable, Category="Game")
+    void LeaveTheGame();
 
     UFUNCTION(BlueprintCallable, Category="Game")
     void SetGameTrack(const FTrackInfo& TrackInfo);
@@ -45,7 +49,7 @@ public:
     void StartGameRequest();
 
     UFUNCTION(BlueprintCallable, Category="Game")
-    void RestartGameRequest();
+    void ResetGameRequest();
     
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Game")
     void ForceStopGame();
@@ -72,10 +76,13 @@ public:
     FOnGameStopped OnGameStopped;
     
     UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="Game")
-    FOnGameRestarted OnGameRestarted;
+    FOnGameReset OnGameReset;
 
     UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="Game")
     FOnPlayerJoined OnPlayerJoined;
+
+    UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="Game")
+    FOnPlayerLeaved OnPlayerLeaved;
 
     UPROPERTY(BlueprintReadOnly, Category="Game")
     TMap<EHitType, int32> HitTypeCounts;
