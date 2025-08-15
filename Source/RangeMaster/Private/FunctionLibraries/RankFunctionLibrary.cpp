@@ -114,7 +114,7 @@ ETrackRank URankFunctionLibrary::CalculateTrackRank(const int32 Score, const int
 {
 	if (MaxScore <= 0) return ETrackRank::None;
 	
-	const float Accuracy = Score / MaxScore;
+	const float Accuracy = static_cast<float>(Score) / static_cast<float>(MaxScore);
 	
 	if (Accuracy >= 1.0f) return ETrackRank::SS;
 	if (Accuracy >= 0.95f) return ETrackRank::S;
@@ -128,32 +128,31 @@ ETrackRank URankFunctionLibrary::CalculateTrackRank(const int32 Score, const int
 int32 URankFunctionLibrary::CalculateMaxScore(const int32 TargetCount)
 {
 	const UBeamNBeatScoreSettings* Settings = UBeamNBeatScoreSettings::Get();
-	if (!Settings || Settings->ComboTiers.IsEmpty()) return 1;
+	if (!Settings || Settings->ComboTiers.IsEmpty()) return 0;
 
 	const TArray<FComboTierData>& ComboTiers = Settings->ComboTiers;
 	const int32 BasePoints = Settings->BasePoints;
     
 	int32 MaxScore = 0;
 	int32 TargetsLeft = TargetCount;
-	int32 PreviousThreshold = 0;
+	int32 PreviousThreshold = 1;
+	int32 CurrentMultiplier = Settings->BaseMultiplier;
     
-	for (int32 i = 0; i < ComboTiers.Num() - 1; i++)
+	for (const FComboTierData& Tier : ComboTiers)
 	{
 		if (TargetsLeft <= 0) break;
 
-		const FComboTierData& Tier = ComboTiers[i];
-
-		const int32 TargetsInThisTier = FMath::Min(Tier.Threshold - PreviousThreshold, TargetsLeft);
-		MaxScore += TargetsInThisTier * BasePoints * Tier.Multiplier;
+		const int32 TargetsInTier = FMath::Min(Tier.Threshold - PreviousThreshold, TargetsLeft);
+		MaxScore += TargetsInTier * BasePoints * CurrentMultiplier;
         
-		TargetsLeft -= TargetsInThisTier;
+		TargetsLeft -= TargetsInTier;
 		PreviousThreshold = Tier.Threshold;
+		CurrentMultiplier = Tier.Multiplier;
 	}
 
 	if (TargetsLeft > 0)
 	{
-		const FComboTierData& LastTier = ComboTiers.Last();
-		MaxScore += TargetsLeft * BasePoints * LastTier.Multiplier;
+		MaxScore += TargetsLeft * BasePoints * CurrentMultiplier;
 	}
 
 	return MaxScore;
