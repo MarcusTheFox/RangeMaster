@@ -33,5 +33,8 @@ public:
 	static FLinearColor GetHitTypeColor(EHitType HitType);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	static ETrackRank CalculateTrackRank(const TMap<EHitType, int32>& HitTypeCounts, int32 TotalBeats);
+	static ETrackRank CalculateTrackRank(const int32 Score, const int32 MaxScore);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static int32 CalculateMaxScore(const int32 TargetCount);
 };

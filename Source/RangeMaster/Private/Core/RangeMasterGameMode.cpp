@@ -87,6 +87,8 @@ void ARangeMasterGameMode::StartGameRequest_Implementation()
 
 void ARangeMasterGameMode::ResetGameRequest()
 {
+    bIsGameInProgress = false;
+    
     GetWorld()->GetTimerManager().ClearTimer(PrepareTimerHandle);
     GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
     GetWorld()->GetTimerManager().ClearTimer(EndGameTimerHandle);
@@ -106,6 +108,7 @@ void ARangeMasterGameMode::ResetGameRequest()
 
 void ARangeMasterGameMode::ForceStopGame_Implementation()
 {
+    bIsGameInProgress = false;
     bWasForceStopped = true;
     
     GetWorld()->GetTimerManager().ClearTimer(PrepareTimerHandle);
@@ -123,10 +126,13 @@ void ARangeMasterGameMode::ForceStopGame_Implementation()
 void ARangeMasterGameMode::EndGame()
 {
     GetWorld()->GetTimerManager().ClearTimer(EndGameTimerHandle);
-    
-    FName TrackID = CurrentTrackData.TrackID;
-    int32 Score = ScoreSystem ? ScoreSystem->GetScore() : 0;
-    ETrackRank Rank = URankFunctionLibrary::CalculateTrackRank(HitTypeCounts, CurrentTrackData.TotalTargets);
+
+    bIsGameInProgress = false;
+
+    const FName TrackID = CurrentTrackData.TrackID;
+    const int32 Score = ScoreSystem ? ScoreSystem->GetScore() : 0;
+    const int32 MaxScore = URankFunctionLibrary::CalculateMaxScore(CurrentTrackData.TotalTargets);
+    const ETrackRank Rank = URankFunctionLibrary::CalculateTrackRank(Score, MaxScore);
     
     if (!bWasForceStopped)
     {
@@ -156,6 +162,8 @@ void ARangeMasterGameMode::OnBeatReceived(const FTimeMapData& TimeMapData)
 
 void ARangeMasterGameMode::RegisterHit(EHitType HitType)
 {
+    if (!bIsGameInProgress) return;
+    
     int32& Count = HitTypeCounts.FindOrAdd(HitType);
     Count++;
     OnHitRegistered.Broadcast(HitType);
@@ -243,6 +251,9 @@ void ARangeMasterGameMode::FinishCountdown()
     
     OnCountdownFinished.Broadcast(); // UI: "Старт!"
     OnGameStarted.Broadcast(); // Сигнал о начале игры
+
+    bIsGameInProgress = true;
+
     if (RhythmController)
     {
         RhythmController->Play();

@@ -93,6 +93,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Game")
     FTrackInfo CurrentTrackData;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Game")
+    bool bIsGameInProgress = false;
+
     UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="Game|Countdown")
     FOnCountdownStarted OnCountdownStarted;
 
@@ -146,6 +149,7 @@ private:
     bool bPlayerInGame = false;
     bool bWasForceStopped = false;
     bool bMusicHasFinished = false;
+    
     int32 TotalTargets = 0;
     int32 LastSpawnedTargetIndex = 0;
     

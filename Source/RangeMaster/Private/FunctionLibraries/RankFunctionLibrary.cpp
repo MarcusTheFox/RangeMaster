@@ -3,6 +3,8 @@
 
 #include "FunctionLibraries/RankFunctionLibrary.h"
 
+#include "Settings/BeamNBeatScoreSettings.h"
+
 FText URankFunctionLibrary::GetRankText(ETrackRank Rank)
 {
 	switch (Rank)
@@ -108,11 +110,12 @@ FLinearColor URankFunctionLibrary::GetHitTypeColor(EHitType HitType)
 	}
 }
 
-ETrackRank URankFunctionLibrary::CalculateTrackRank(const TMap<EHitType, int32>& HitTypeCounts, int32 TotalBeats)
+ETrackRank URankFunctionLibrary::CalculateTrackRank(const int32 Score, const int32 MaxScore)
 {
-	if (TotalBeats <= 0) return ETrackRank::None;
-	int32 Perfect = HitTypeCounts.Contains(EHitType::Perfect) ? HitTypeCounts[EHitType::Perfect] : 0;
-	float Accuracy = static_cast<float>(Perfect) / static_cast<float>(TotalBeats);
+	if (MaxScore <= 0) return ETrackRank::None;
+	
+	const float Accuracy = Score / MaxScore;
+	
 	if (Accuracy >= 1.0f) return ETrackRank::SS;
 	if (Accuracy >= 0.95f) return ETrackRank::S;
 	if (Accuracy >= 0.90f) return ETrackRank::A;
@@ -120,4 +123,38 @@ ETrackRank URankFunctionLibrary::CalculateTrackRank(const TMap<EHitType, int32>&
 	if (Accuracy >= 0.70f) return ETrackRank::C;
 	if (Accuracy >= 0.50f) return ETrackRank::D;
 	return ETrackRank::E;
+}
+
+int32 URankFunctionLibrary::CalculateMaxScore(const int32 TargetCount)
+{
+	const UBeamNBeatScoreSettings* Settings = UBeamNBeatScoreSettings::Get();
+	if (!Settings || Settings->ComboTiers.IsEmpty()) return 1;
+
+	const TArray<FComboTierData>& ComboTiers = Settings->ComboTiers;
+	const int32 BasePoints = Settings->BasePoints;
+    
+	int32 MaxScore = 0;
+	int32 TargetsLeft = TargetCount;
+	int32 PreviousThreshold = 0;
+    
+	for (int32 i = 0; i < ComboTiers.Num() - 1; i++)
+	{
+		if (TargetsLeft <= 0) break;
+
+		const FComboTierData& Tier = ComboTiers[i];
+
+		const int32 TargetsInThisTier = FMath::Min(Tier.Threshold - PreviousThreshold, TargetsLeft);
+		MaxScore += TargetsInThisTier * BasePoints * Tier.Multiplier;
+        
+		TargetsLeft -= TargetsInThisTier;
+		PreviousThreshold = Tier.Threshold;
+	}
+
+	if (TargetsLeft > 0)
+	{
+		const FComboTierData& LastTier = ComboTiers.Last();
+		MaxScore += TargetsLeft * BasePoints * LastTier.Multiplier;
+	}
+
+	return MaxScore;
 }
