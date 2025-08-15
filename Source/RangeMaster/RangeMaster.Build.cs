@@ -17,7 +17,8 @@ public class RangeMaster : ModuleRules
 			"InputCore",
 			"DeveloperSettings",
 			"Json",
-			"JsonUtilities"
+			"JsonUtilities",
+			"UMG"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
