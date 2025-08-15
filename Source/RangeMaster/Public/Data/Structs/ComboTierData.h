@@ -8,9 +8,9 @@ struct FComboTierData
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combo Tier", meta = (ClampMin = "1"))
-	int32 Threshold = 10;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combo Tier", meta = (ClampMin = "0"))
+	int32 Threshold = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combo Tier", meta = (ClampMin = "1"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combo Tier", meta = (ClampMin = "0"))
 	int32 Multiplier = 1;
 };
