@@ -60,6 +60,7 @@ void ASpawner::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Other
             if (GM->ScoreSystem)
             {
                 GM->ScoreSystem->ResetCombo();
+                GM->ScoreSystem->SubtractScore(50);
             }
         }
     }

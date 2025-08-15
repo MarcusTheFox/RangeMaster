@@ -20,9 +20,12 @@ public:
 protected:
     virtual void BeginPlay() override;
 
-public:    
+public:
     UFUNCTION(BlueprintCallable, Category="Score System|Score")
     void AddScore(int32 Value);
+    
+    UFUNCTION(BlueprintCallable, Category="Score System|Score")
+    void SubtractScore(int32 Value);
     
     UFUNCTION(BlueprintCallable, BlueprintPure, Category="Score System|Score")
     int32 GetScore() const;

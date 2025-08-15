@@ -23,6 +23,14 @@ void UScoreSystemComponent::AddScore(const int32 Value)
     OnScoreChanged.Broadcast(Score);
 }
 
+void UScoreSystemComponent::SubtractScore(int32 Value)
+{
+    if (Value == 0) return;
+    
+    Score = FMath::Max(0, Score - Value);
+    OnScoreChanged.Broadcast(Score);
+}
+
 int32 UScoreSystemComponent::GetScore() const
 {
     return Score;
