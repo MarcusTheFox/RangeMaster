@@ -9,5 +9,6 @@ UENUM(BlueprintType)
 enum class EHitType : uint8
 {
 	Perfect		UMETA(DisplayName = "Perfect"),
-	Miss		UMETA(DisplayName = "Miss")
+	Miss		UMETA(DisplayName = "Miss"),
+	Lost		UMETA(DisplayName = "Lost")
 }; 
