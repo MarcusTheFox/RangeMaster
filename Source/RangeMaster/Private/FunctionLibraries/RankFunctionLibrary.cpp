@@ -82,6 +82,8 @@ FText URankFunctionLibrary::GetHitTypeText(EHitType HitType)
 {
 	switch (HitType)
 	{
+	case EHitType::Lost:
+		return FText::FromString(TEXT("Lost"));
 	case EHitType::Miss:
 		return FText::FromString(TEXT("Miss"));
 	case EHitType::Perfect:
@@ -95,8 +97,10 @@ FLinearColor URankFunctionLibrary::GetHitTypeColor(EHitType HitType)
 {
 	switch (HitType)
 	{
-	case EHitType::Miss:
+	case EHitType::Lost:
 		return FLinearColor(0.8f, 0.2f, 0.2f, 1.0f); // Красный
+	case EHitType::Miss:
+		return FLinearColor(0.5f, 0.5f, 0.5f, 1.0f); // Серый
 	case EHitType::Perfect:
 		return FLinearColor(0.2f, 0.8f, 0.2f, 1.0f); // Зеленый
 	default:
