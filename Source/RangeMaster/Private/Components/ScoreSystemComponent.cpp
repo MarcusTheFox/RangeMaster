@@ -62,13 +62,13 @@ int32 UScoreSystemComponent::GetMaxCombo() const
 
 int32 UScoreSystemComponent::GetComboMultiplier() const
 {
-    if (CurrentCombo >= 100)
-        return 16;
-    if (CurrentCombo >= 50)
+    if (CurrentCombo > 100)
         return 8;
-    if (CurrentCombo >= 20)
-        return 4;
-    if (CurrentCombo >= 10)
+    if (CurrentCombo > 50)
+        return 5;
+    if (CurrentCombo > 25)
+        return 3;
+    if (CurrentCombo > 10)
         return 2;
     return 1;
 }
