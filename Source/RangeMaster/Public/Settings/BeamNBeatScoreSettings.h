@@ -17,10 +17,13 @@ class RANGEMASTER_API UBeamNBeatScoreSettings : public UDeveloperSettings
 
 public:
 	UPROPERTY(Config, EditAnywhere, Category = "Score")
-	TArray<FComboTierData> ComboTiers;
+	int32 BasePoints = 100;
 
 	UPROPERTY(Config, EditAnywhere, Category = "Score")
-	int32 BasePoints;
+	int32 BaseMultiplier = 1;
+	
+	UPROPERTY(Config, EditAnywhere, Category = "Score")
+	TArray<FComboTierData> ComboTiers;
 
 	static const UBeamNBeatScoreSettings* Get()
 	{
