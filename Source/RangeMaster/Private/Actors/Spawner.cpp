@@ -56,7 +56,7 @@ void ASpawner::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Other
         ARangeMasterGameMode* GM = UGameUtilityFunctionLibrary::GetRangeMasterGameMode(this);
         if (GM)
         {
-            GM->RegisterHit(EHitType::Miss);
+            GM->RegisterHit(EHitType::Lost);
             if (GM->ScoreSystem)
             {
                 GM->ScoreSystem->ResetCombo();
