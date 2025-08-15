@@ -26,5 +26,5 @@ public:
     FOnTargetDestroyed OnTargetDestroyed;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Target")
-    int32 Points = 1000;
+    int32 Points = 100;
 }; 
