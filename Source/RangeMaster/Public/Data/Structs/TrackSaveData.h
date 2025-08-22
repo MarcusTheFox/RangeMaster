@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/Enums/Judgement.h"
 #include "Data/Enums/TrackRank.h"
 #include "TrackSaveData.generated.h"
 
@@ -17,7 +18,8 @@ struct FTrackSaveData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ETrackRank MaxRank = ETrackRank::None;
 
-	FTrackSaveData()
-		: MaxScore(0), MaxRank(ETrackRank::None)
-	{}
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<EJudgement> Judgements;
+
+	FTrackSaveData() {}
 }; 
