@@ -10,5 +10,8 @@ enum class EJudgement : uint8
 {
 	Perfect		UMETA(DisplayName = "Perfect"),
 	Miss		UMETA(DisplayName = "Miss"),
-	Lost		UMETA(DisplayName = "Lost")
-}; 
+	Lost		UMETA(DisplayName = "Lost"),
+	Count		UMETA(DisplayName = "DO NOT USE", Hidden)
+};
+
+static_assert(static_cast<uint8>(EJudgement::Count) <= 16, "EJudgement enum has grown too large for 4-bit packing!");

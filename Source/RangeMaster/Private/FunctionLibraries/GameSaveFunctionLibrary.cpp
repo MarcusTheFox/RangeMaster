@@ -3,6 +3,7 @@
 
 #include "FunctionLibraries/GameSaveFunctionLibrary.h"
 
+#include "FunctionLibraries/CompressionFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "SaveGame/RangeMasterSaveGame.h"
 
@@ -24,11 +25,13 @@ void UGameSaveFunctionLibrary::SaveTrackResult(const FName TrackID, const int32 
 		{
 			ExistingData.MaxScore = Score;
 			ExistingData.MaxRank = Rank;
-			ExistingData.Judgements = Judgements;
+			ExistingData.JudgementCount = Judgements.Num();
+			ExistingData.Judgements = UCompressionFunctionLibrary::PackJudgements(Judgements);
 		}
-		else if (Score == ExistingData.MaxScore && ExistingData.Judgements.Num() > Judgements.Num())
+		else if (Score == ExistingData.MaxScore && ExistingData.JudgementCount > Judgements.Num())
 		{
-			ExistingData.Judgements = Judgements;
+			ExistingData.JudgementCount = Judgements.Num();
+			ExistingData.Judgements = UCompressionFunctionLibrary::PackJudgements(Judgements);
 		}
 		
 		UGameplayStatics::SaveGameToSlot(SaveGame, SaveSlot, 0);

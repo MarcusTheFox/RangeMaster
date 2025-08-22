@@ -18,8 +18,11 @@ struct FTrackSaveData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ETrackRank MaxRank = ETrackRank::None;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<EJudgement> Judgements;
+	UPROPERTY()
+	int32 JudgementCount = 0;
+
+	UPROPERTY()
+	TArray<uint8> Judgements;
 
 	FTrackSaveData() {}
 }; 
