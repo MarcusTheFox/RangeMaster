@@ -77,6 +77,7 @@ void ARangeMasterGameMode::StartGameRequest_Implementation()
     bMusicHasFinished = false;
     
     ResetJudgementCounts();
+    TrackJudgements.Empty();
     if (ScoreSystem)
     {
         ScoreSystem->ResetAllStats();
@@ -136,7 +137,7 @@ void ARangeMasterGameMode::EndGame()
     
     if (!bWasForceStopped)
     {
-        UGameSaveFunctionLibrary::SaveTrackResult(TrackID, Score, Rank);
+        UGameSaveFunctionLibrary::SaveTrackResult(TrackID, Score, Rank, TrackJudgements);
     }
     
     FGameResultData Result;
@@ -163,6 +164,8 @@ void ARangeMasterGameMode::OnBeatReceived(const FTimeMapData& TimeMapData)
 void ARangeMasterGameMode::RegisterJudgement(EJudgement Judgement)
 {
     if (!bIsGameInProgress) return;
+
+    TrackJudgements.Add(Judgement);
     
     int32& Count = JudgementCounts.FindOrAdd(Judgement);
     Count++;

@@ -6,7 +6,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "SaveGame/RangeMasterSaveGame.h"
 
-void UGameSaveFunctionLibrary::SaveTrackResult(FName TrackID, int32 Score, ETrackRank Rank)
+void UGameSaveFunctionLibrary::SaveTrackResult(const FName TrackID, const int32 Score, const ETrackRank Rank,
+	const TArray<EJudgement>& Judgements)
 {
 	const FString SaveSlot = TrackID.ToString();
 	URangeMasterSaveGame* SaveGame = Cast<URangeMasterSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlot, 0));
@@ -19,10 +20,15 @@ void UGameSaveFunctionLibrary::SaveTrackResult(FName TrackID, int32 Score, ETrac
 	{
 		FTrackSaveData& ExistingData = SaveGame->TrackResult;
 		
-		if (Score > ExistingData.MaxScore)
+		if (Score > ExistingData.MaxScore || ExistingData.Judgements.Num() == 0)
 		{
 			ExistingData.MaxScore = Score;
 			ExistingData.MaxRank = Rank;
+			ExistingData.Judgements = Judgements;
+		}
+		else if (Score == ExistingData.MaxScore && ExistingData.Judgements.Num() > Judgements.Num())
+		{
+			ExistingData.Judgements = Judgements;
 		}
 		
 		UGameplayStatics::SaveGameToSlot(SaveGame, SaveSlot, 0);

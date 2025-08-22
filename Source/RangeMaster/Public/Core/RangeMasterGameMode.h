@@ -154,6 +154,7 @@ private:
     int32 LastSpawnedTargetIndex = 0;
     
     TArray<uint8> CachedRawAudioData;
+    TArray<EJudgement> TrackJudgements;
     
     FTimerHandle PrepareTimerHandle;
     FTimerHandle CountdownTimerHandle;

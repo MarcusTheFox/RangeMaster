@@ -17,7 +17,8 @@ class RANGEMASTER_API UGameSaveFunctionLibrary : public UBlueprintFunctionLibrar
 
 public:
 	UFUNCTION(BlueprintCallable)
-	static void SaveTrackResult(FName TrackID, int32 Score, ETrackRank Rank);
+	static void SaveTrackResult(const FName TrackID, const int32 Score, const ETrackRank Rank,
+	                            const TArray<EJudgement>& Judgements);
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static bool GetTrackResult(FName TrackID, FTrackSaveData& OutResult);
