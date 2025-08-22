@@ -21,4 +21,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static bool GetTrackResult(FName TrackID, FTrackSaveData& OutResult);
+
+	UFUNCTION(BlueprintCallable)
+	static bool DeleteTrackResult(const FName TrackID);
 };

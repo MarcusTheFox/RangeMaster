@@ -44,3 +44,9 @@ bool UGameSaveFunctionLibrary::GetTrackResult(FName TrackID, FTrackSaveData& Out
 	
 	return false;
 }
+
+bool UGameSaveFunctionLibrary::DeleteTrackResult(const FName TrackID)
+{
+	const FString SaveSlot = TrackID.ToString();
+	return UGameplayStatics::DeleteGameInSlot(SaveSlot, 0);
+}
