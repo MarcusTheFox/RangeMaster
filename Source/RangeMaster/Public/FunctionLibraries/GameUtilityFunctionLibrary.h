@@ -20,4 +20,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Game", meta=(WorldContext="WorldContextObject"))
 	static class ARangeMasterGameMode* GetRangeMasterGameMode(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static FString GetGameVersion();
 };

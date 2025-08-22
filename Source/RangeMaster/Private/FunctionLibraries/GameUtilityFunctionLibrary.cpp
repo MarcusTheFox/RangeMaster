@@ -28,3 +28,22 @@ ARangeMasterGameMode* UGameUtilityFunctionLibrary::GetRangeMasterGameMode(const 
     UWorld* World = GEngine->GetWorldFromContextObjectChecked(WorldContextObject);
     return Cast<ARangeMasterGameMode>(UGameplayStatics::GetGameMode(World));
 }
+
+FString UGameUtilityFunctionLibrary::GetGameVersion()
+{
+	FString GameVersion;
+
+	GConfig->GetString(
+        TEXT("/Script/EngineSettings.GeneralProjectSettings"),
+        TEXT("ProjectVersion"),
+        GameVersion,
+        GGameIni
+    );
+
+	if (GameVersion.IsEmpty())
+	{
+		return TEXT("0.0.0");
+	}
+
+	return GameVersion;
+}
