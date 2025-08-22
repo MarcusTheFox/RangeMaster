@@ -76,7 +76,7 @@ void ARangeMasterGameMode::StartGameRequest_Implementation()
     bWasForceStopped = false;
     bMusicHasFinished = false;
     
-    ResetHitTypeCounts();
+    ResetJudgementCounts();
     if (ScoreSystem)
     {
         ScoreSystem->ResetAllStats();
@@ -143,7 +143,7 @@ void ARangeMasterGameMode::EndGame()
     Result.Score = Score;
     Result.Rank = Rank;
     Result.MaxCombo = ScoreSystem ? ScoreSystem->GetMaxCombo() : 0;
-    Result.HitTypeCounts = HitTypeCounts;
+    Result.JudgementCounts = JudgementCounts;
 
     OnGameFinished.Broadcast(Result);
 }
@@ -160,24 +160,24 @@ void ARangeMasterGameMode::OnBeatReceived(const FTimeMapData& TimeMapData)
     }
 }
 
-void ARangeMasterGameMode::RegisterHit(EHitType HitType)
+void ARangeMasterGameMode::RegisterJudgement(EJudgement Judgement)
 {
     if (!bIsGameInProgress) return;
     
-    int32& Count = HitTypeCounts.FindOrAdd(HitType);
+    int32& Count = JudgementCounts.FindOrAdd(Judgement);
     Count++;
-    OnHitRegistered.Broadcast(HitType);
+    OnJudgementRegistered.Broadcast(Judgement);
 }
 
-int32 ARangeMasterGameMode::GetHitTypeCount(EHitType HitType) const
+int32 ARangeMasterGameMode::GetJudgementCount(EJudgement Judgement) const
 {
-    const int32* Count = HitTypeCounts.Find(HitType);
+    const int32* Count = JudgementCounts.Find(Judgement);
     return Count ? *Count : 0;
 }
 
-void ARangeMasterGameMode::ResetHitTypeCounts()
+void ARangeMasterGameMode::ResetJudgementCounts()
 {
-    HitTypeCounts.Empty();
+    JudgementCounts.Empty();
 } 
 
 void ARangeMasterGameMode::HandleMusicFinished()

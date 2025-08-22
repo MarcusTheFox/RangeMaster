@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Data/Enums/HitType.h"
+#include "Data/Enums/Judgement.h"
 #include "Data/Enums/TrackRank.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "RankFunctionLibrary.generated.h"
@@ -27,10 +27,10 @@ public:
 	static FLinearColor GetRankColor(ETrackRank Rank);
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	static FText GetHitTypeText(EHitType HitType);
+	static FText GetJudgementText(EJudgement Judgement);
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	static FLinearColor GetHitTypeColor(EHitType HitType);
+	static FLinearColor GetJudgementColor(EJudgement Judgement);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static ETrackRank CalculateTrackRank(const int32 Score, const int32 MaxScore);

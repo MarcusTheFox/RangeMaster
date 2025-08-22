@@ -80,30 +80,30 @@ FLinearColor URankFunctionLibrary::GetRankColor(ETrackRank Rank)
 	}
 }
 
-FText URankFunctionLibrary::GetHitTypeText(EHitType HitType)
+FText URankFunctionLibrary::GetJudgementText(EJudgement Judgement)
 {
-	switch (HitType)
+	switch (Judgement)
 	{
-	case EHitType::Lost:
+	case EJudgement::Lost:
 		return FText::FromString(TEXT("Lost"));
-	case EHitType::Miss:
+	case EJudgement::Miss:
 		return FText::FromString(TEXT("Miss"));
-	case EHitType::Perfect:
+	case EJudgement::Perfect:
 		return FText::FromString(TEXT("Perfect"));
 	default:
 		return FText::FromString(TEXT("Unknown"));
 	}
 }
 
-FLinearColor URankFunctionLibrary::GetHitTypeColor(EHitType HitType)
+FLinearColor URankFunctionLibrary::GetJudgementColor(EJudgement Judgement)
 {
-	switch (HitType)
+	switch (Judgement)
 	{
-	case EHitType::Lost:
+	case EJudgement::Lost:
 		return FLinearColor(0.8f, 0.2f, 0.2f, 1.0f); // Красный
-	case EHitType::Miss:
+	case EJudgement::Miss:
 		return FLinearColor(0.5f, 0.5f, 0.5f, 1.0f); // Серый
-	case EHitType::Perfect:
+	case EJudgement::Perfect:
 		return FLinearColor(0.2f, 0.8f, 0.2f, 1.0f); // Зеленый
 	default:
 		return FLinearColor(0.5f, 0.5f, 0.5f, 1.0f); // Серый по умолчанию

@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "HitType.generated.h"
+#include "Judgement.generated.h"
 
 UENUM(BlueprintType)
-enum class EHitType : uint8
+enum class EJudgement : uint8
 {
 	Perfect		UMETA(DisplayName = "Perfect"),
 	Miss		UMETA(DisplayName = "Miss"),

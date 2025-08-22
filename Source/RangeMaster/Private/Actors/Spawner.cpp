@@ -3,7 +3,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h"
 #include "Core/RangeMasterGameMode.h"
-#include "Data/Enums/HitType.h"
+#include "Data/Enums/Judgement.h"
 #include "FunctionLibraries/GameUtilityFunctionLibrary.h"
 
 ASpawner::ASpawner()
@@ -56,7 +56,7 @@ void ASpawner::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Other
         ARangeMasterGameMode* GM = UGameUtilityFunctionLibrary::GetRangeMasterGameMode(this);
         if (GM)
         {
-            GM->RegisterHit(EHitType::Lost);
+            GM->RegisterJudgement(EJudgement::Lost);
             if (GM->ScoreSystem)
             {
                 GM->ScoreSystem->ResetCombo();

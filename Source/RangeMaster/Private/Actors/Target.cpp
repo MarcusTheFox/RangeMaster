@@ -19,7 +19,7 @@ void ATarget::OnHit_Implementation()
     }
     if (GM)
     {
-        GM->RegisterHit(EHitType::Perfect);
+        GM->RegisterJudgement(EJudgement::Perfect);
     }
     DestroyTarget();
 }

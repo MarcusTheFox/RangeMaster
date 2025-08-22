@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Data/Enums/HitType.h"
+#include "Data/Enums/Judgement.h"
 #include "Data/Enums/TrackRank.h"
 #include "GameResultData.generated.h"
 
@@ -20,5 +20,5 @@ struct FGameResultData
     int32 MaxCombo = 0;
 
     UPROPERTY(BlueprintReadOnly)
-    TMap<EHitType, int32> HitTypeCounts;
+    TMap<EJudgement, int32> JudgementCounts;
 }; 
