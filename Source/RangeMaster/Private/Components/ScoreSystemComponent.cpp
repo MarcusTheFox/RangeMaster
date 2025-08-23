@@ -1,5 +1,7 @@
 #include "Components/ScoreSystemComponent.h"
 
+#include "Settings/BeamNBeatScoreSettings.h"
+
 UScoreSystemComponent::UScoreSystemComponent()
 {
     PrimaryComponentTick.bCanEverTick = false;
@@ -70,15 +72,19 @@ int32 UScoreSystemComponent::GetMaxCombo() const
 
 int32 UScoreSystemComponent::GetComboMultiplier() const
 {
-    if (CurrentCombo > 100)
-        return 8;
-    if (CurrentCombo > 50)
-        return 5;
-    if (CurrentCombo > 25)
-        return 3;
-    if (CurrentCombo > 10)
-        return 2;
-    return 1;
+    const UBeamNBeatScoreSettings* Settings = UBeamNBeatScoreSettings::Get();
+    if (!Settings) return 1;
+    
+    for (int32 i = Settings->ComboTiers.Num() - 1; i >= 0; --i)
+    {
+        const FComboTierData& Tier = Settings->ComboTiers[i];
+        if (CurrentCombo >= Tier.Threshold)
+        {
+            return Tier.Multiplier;
+        }
+    }
+    
+    return Settings->BaseMultiplier;
 }
 
 void UScoreSystemComponent::ResetAllStats()
